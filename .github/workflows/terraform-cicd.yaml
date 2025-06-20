@@ -1,0 +1,98 @@
+name: Terraform CI-CD pipeline
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.tf'
+      - '*.tfvars'
+      - '.github/workflows/terraform-cicd.yaml'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/*.tf'
+      - '*.tfvars'
+      - '.github/workflows/terraform-cicd.yaml'
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform fmt
+        uses: dflook/terraform-fmt-check@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Validate
+        uses: dflook/terraform-validate@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  test:
+    needs: [lint, validate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Test
+        uses: dflook/terraform-test@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  plan:
+    if: github.event_name == 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dflook/terraform-plan@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  apply:
+    environment: production
+    if: github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Apply
+        uses: dflook/terraform-apply@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  destroy:
+    environment: production
+    if: github.event_name == 'push'
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Apply
+        uses: dflook/terraform-destroy@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
