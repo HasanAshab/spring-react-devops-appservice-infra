@@ -67,7 +67,7 @@ jobs:
 
   apply:
     environment: production
-    if: github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
