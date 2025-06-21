@@ -28,10 +28,7 @@ jobs:
 
       - name: Terraform fmt
         uses: dflook/terraform-fmt-check@v2
-        with:
-          workspace: prod
-          var_file: prod.tfvars
-  
+
   test:
     runs-on: ubuntu-latest
     steps:
