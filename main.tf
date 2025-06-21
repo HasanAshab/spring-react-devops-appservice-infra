@@ -5,7 +5,7 @@ resource "azurerm_resource_group" "main" {
 }
 
 locals {
-  aks_name    = "aks-${terraform.workspace}-${var.location}-001"
+  aks_name   = "aks-${terraform.workspace}-${var.location}-001"
   dns_prefix = replace(local.aks_name, "-", "")
 }
 
