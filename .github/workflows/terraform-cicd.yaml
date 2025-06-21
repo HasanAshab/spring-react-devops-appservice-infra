@@ -37,7 +37,6 @@ jobs:
       - name: Terraform Test
         uses: dflook/terraform-test@v2
         with:
-          workspace: prod
           var_file: prod.tfvars
 
   validate:
@@ -77,17 +76,3 @@ jobs:
         with:
           workspace: prod
           var_file: prod.tfvars
-
-#   destroy:
-#     environment: production
-#     if: github.event_name == 'push'
-#     needs: apply
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-# 
-#       - name: Terraform Apply
-#         uses: dflook/terraform-destroy@v2
-#         with:
-#           workspace: prod
-#           var_file: prod.tfvars
