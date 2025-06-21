@@ -41,7 +41,6 @@ jobs:
           var_file: prod.tfvars
 
   validate:
-    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +50,7 @@ jobs:
 
   plan:
     if: github.event_name == 'pull_request'
-    needs: test
+    needs: [lint, test, validate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +67,7 @@ jobs:
   apply:
     environment: production
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [lint, test]
+    needs: [lint, test, validate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
