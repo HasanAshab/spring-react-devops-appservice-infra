@@ -44,7 +44,7 @@ jobs:
           var_file: prod.tfvars
 
   validate:
-    if: github.ref != 
+    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -66,11 +66,15 @@ jobs:
         with:
           workspace: prod
           var_file: prod.tfvars
+      - name: Cost Estimation
+        run: |
+          curl -s https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+          infracost breakdown --path . --format table
 
   apply:
     environment: production
     if: github.event_name == 'push'
-    needs: test
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
