@@ -23,6 +23,7 @@ env:
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +32,7 @@ jobs:
         uses: dflook/terraform-fmt-check@v2
 
   test:
+    name: Unit Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +43,7 @@ jobs:
           var_file: prod.tfvars
 
   validate:
+    name: Validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,6 +52,7 @@ jobs:
         uses: dflook/terraform-validate@v2
 
   plan:
+    name: Plan
     if: github.event_name == 'pull_request'
     needs: [lint, test, validate]
     runs-on: ubuntu-latest
@@ -61,6 +65,7 @@ jobs:
           var_file: prod.tfvars
 
   cost-estimation:
+    name: Pre-Deployment Cost Estimation
     needs: plan
     runs-on: ubuntu-latest
     steps:
@@ -68,8 +73,6 @@ jobs:
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
-        # with:
-        #   api-key: ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Checkout base branch
         uses: actions/checkout@v4
@@ -101,6 +104,7 @@ jobs:
                                      --behavior=update
 
   apply:
+    name: Apply
     environment: production
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [lint, test, validate]
@@ -113,3 +117,32 @@ jobs:
         with:
           workspace: prod
           var_file: prod.tfvars
+  
+  cost-analysis:
+    name: Post-Deployment Cost Analysis and Report
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+
+      - name: Generate Infracost cost estimate
+        run: |
+          infracost breakdown --path=. \
+                              --format=json \
+                              --out-file=/tmp/post-deployment-cost.json
+
+      - name: Upload Cost Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-deployment-cost
+          path: /tmp/post-deployment-cost.json
+
+      - name: Send to Slack
+        run: |
+          infracost output \
+            --path /tmp/post-deployment-cost.json \
+            --format slack-message \
+            --slack-webhook ${{ secrets.SLACK_WEBHOOK }}
