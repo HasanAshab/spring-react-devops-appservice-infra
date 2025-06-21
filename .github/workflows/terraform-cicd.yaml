@@ -48,9 +48,6 @@ jobs:
 
       - name: Terraform Validate
         uses: dflook/terraform-validate@v2
-        with:
-          workspace: prod
-          var_file: prod.tfvars
 
   plan:
     if: github.event_name == 'pull_request'
