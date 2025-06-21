@@ -1,8 +1,6 @@
 name: Terraform CI-CD pipeline
 on:
   push:
-    branches:
-      - main
     paths:
       - '**/*.tf'
       - '*.tfvars'
@@ -33,26 +31,26 @@ jobs:
         with:
           workspace: prod
           var_file: prod.tfvars
-
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Terraform Validate
-        uses: dflook/terraform-validate@v2
-        with:
-          workspace: prod
-          var_file: prod.tfvars
-
+  
   test:
-    needs: [lint, validate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Terraform Test
         uses: dflook/terraform-test@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  validate:
+    if: github.ref != 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Validate
+        uses: dflook/terraform-validate@v2
         with:
           workspace: prod
           var_file: prod.tfvars
@@ -83,16 +81,16 @@ jobs:
           workspace: prod
           var_file: prod.tfvars
 
-  destroy:
-    environment: production
-    if: github.event_name == 'push'
-    needs: apply
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Terraform Apply
-        uses: dflook/terraform-destroy@v2
-        with:
-          workspace: prod
-          var_file: prod.tfvars
+#   destroy:
+#     environment: production
+#     if: github.event_name == 'push'
+#     needs: apply
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+# 
+#       - name: Terraform Apply
+#         uses: dflook/terraform-destroy@v2
+#         with:
+#           workspace: prod
+#           var_file: prod.tfvars
