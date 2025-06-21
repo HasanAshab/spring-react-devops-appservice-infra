@@ -59,10 +59,46 @@ jobs:
         with:
           workspace: prod
           var_file: prod.tfvars
-      - name: Cost Estimation
+
+  cost-estimation:
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        # with:
+        #   api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
+      - name: Generate Infracost cost estimate baseline
         run: |
-          curl -s https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
-          infracost breakdown --path . --format table
+          infracost breakdown --path=. \
+                              --format=json \
+                              --out-file=/tmp/infracost-base.json
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Generate Infracost diff
+        run: |
+          infracost diff --path=. \
+                          --format=json \
+                          --compare-to=/tmp/infracost-base.json \
+                          --out-file=/tmp/infracost.json
+
+      - name: Post Infracost comment
+        run: |
+            infracost comment github --path=/tmp/infracost.json \
+                                     --repo=$GITHUB_REPOSITORY \
+                                     --github-token=${{ env.GITHUB_TOKEN }} \
+                                     --pull-request=${{ github.event.pull_request.number }} \
+                                     --behavior=update
 
   apply:
     environment: production
