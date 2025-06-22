@@ -7,28 +7,23 @@ resource "azurerm_resource_group" "main" {
   }
 }
 
-locals {
-  aks_name   = "aks-${terraform.workspace}-${var.location}-001"
-  dns_prefix = replace(local.aks_name, "-", "")
-}
-
-resource "azurerm_kubernetes_cluster" "main" {
-  name                = local.aks_name
-  location            = azurerm_resource_group.main.location
+module "vnet" {
+  source              = "./modules/vnet"
+  name                = "vnet-${local.project_name}-${terraform.workspace}-001"
+  location            = var.location
   resource_group_name = azurerm_resource_group.main.name
-  dns_prefix          = local.dns_prefix
-  tags = {
-    Environment = terraform.workspace
-    Service     = "aks"
-  }
-
-  default_node_pool {
-    name       = "default"
-    node_count = var.node_count
-    vm_size    = var.node_vm_size
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
+  address_space       = ["10.254.0.0/16"]
 }
+
+# resource "azurerm_application_gateway" "name" {
+#   name                = "appgw-${local.project_name}-${terraform.workspace}-001"
+#   resource_group_name = azurerm_resource_group.main.name
+#   location            = azurerm_resource_group.main.location
+
+#   sku {
+#     name     = "Standard_v2"
+#     tier     = "Standard_v2"
+#     capacity = 2
+#   }
+
+# }
