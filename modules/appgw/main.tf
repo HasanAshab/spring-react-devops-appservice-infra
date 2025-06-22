@@ -1,23 +1,74 @@
 resource "azurerm_subnet" "appgw" {
-  name                 = ""
+  name                 = "sn-appgw-${var.project_name}-${terraform.workspace}-001"
   resource_group_name  = var.resource_group_name
-  virtual_network_name = module.vnet.name
+  virtual_network_name = var.vnet_name
   address_prefixes     = ["10.254.0.0/24"]
 }
 
+resource "azurerm_public_ip" "appgw" {
+  name                = "pip-appgw-${var.project_name}-${terraform.workspace}-001"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  allocation_method   = "Static"
+}
+
 resource "azurerm_application_gateway" "main" {
-  name                = "appgw-${local.project_name}-${terraform.workspace}-001"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  name                = "appgw-${var.project_name}-${terraform.workspace}-001"
+  resource_group_name = var.resource_group_name
+  location            = var.location
 
   sku {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
-    capacity = 2
+    name     = var.sku_tier
+    tier     = var.sku_tier
+    capacity = var.capacity
   }
 
   gateway_ip_configuration {
     name      = "appgw-ip-configuration"
     subnet_id = azurerm_subnet.appgw.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name
+    public_ip_address_id = azurerm_public_ip.appgw.id
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name
+    cookie_based_affinity = "Disabled"
+    path                  = "/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = local.frontend_port_name
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name
+    priority                   = 9 
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name
+    backend_address_pool_name  = local.backend_address_pool_name
+    backend_http_settings_name = local.http_setting_name
+  }
+
+  tags = {
+    Environment = terraform.workspace
+    Service     = var.project_name
   }
 }

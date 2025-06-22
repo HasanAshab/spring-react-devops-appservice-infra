@@ -20,4 +20,7 @@ module "appgw" {
   project_name = local.project_name
   location            = var.location
   resource_group_name = azurerm_resource_group.main.name
+  vnet_name           = module.vnet.name
+  sku_tier = "Standard_v2"
+  capacity = 2
 }

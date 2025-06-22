@@ -17,3 +17,18 @@ variable "resource_group_name" {
   description = "Resource Group Name"
   type        = string
 }
+
+variable "vnet_name" {
+  description = "Virtual Network Name"
+  type        = string
+}
+
+variable "sku_tier" {
+  description = "SKU Tier and Name"
+  type        = string
+}
+
+variable "capacity" {
+  description = "Capacity of SKU"
+  type        = number
+}
