@@ -9,21 +9,15 @@ resource "azurerm_resource_group" "main" {
 
 module "vnet" {
   source              = "./modules/vnet"
-  name                = "vnet-${local.project_name}-${terraform.workspace}-001"
+  project_name = local.project_name
   location            = var.location
   resource_group_name = azurerm_resource_group.main.name
   address_space       = ["10.254.0.0/16"]
 }
 
-# resource "azurerm_application_gateway" "name" {
-#   name                = "appgw-${local.project_name}-${terraform.workspace}-001"
-#   resource_group_name = azurerm_resource_group.main.name
-#   location            = azurerm_resource_group.main.location
-
-#   sku {
-#     name     = "Standard_v2"
-#     tier     = "Standard_v2"
-#     capacity = 2
-#   }
-
-# }
+module "appgw" {
+  source              = "./modules/appgw"
+  project_name = local.project_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.main.name
+}
