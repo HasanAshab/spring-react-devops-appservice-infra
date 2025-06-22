@@ -141,8 +141,9 @@ jobs:
           path: /tmp/post-deployment-cost.json
 
       - name: Send to Slack
-        run: |
-          infracost output \
-            --path /tmp/post-deployment-cost.json \
-            --format slack-message \
-            --slack-webhook ${{ secrets.SLACK_WEBHOOK }}
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          payload-file-path: "/tmp/post-deployment-cost.json"
+          payload-templated: true
+          webhook: ${{ secrets.SLACK_WEBHOOK }}
+          webhook-type: incoming-webhook
