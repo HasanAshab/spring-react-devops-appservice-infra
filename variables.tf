@@ -8,12 +8,12 @@ variable "location" {
   }
 }
 
-variable "node_count" {
-  description = "Number of worker nodes"
-  type        = number
+variable "vmss_sku" {
+  description = "SKU of VM-Scale Set"
+  type        = string
 }
 
-variable "node_vm_size" {
-  description = "VM Size of worker nodes"
-  type        = string
+variable "vmss_instances" {
+  description = "Number of instances in VM-Scale Set"
+  type        = number
 }

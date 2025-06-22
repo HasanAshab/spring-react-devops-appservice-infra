@@ -1,3 +1,3 @@
 locals {
-  project_name = "go-web-app"
+  project_name = "three-tier-app"
 }

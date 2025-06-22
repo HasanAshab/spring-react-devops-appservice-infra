@@ -15,6 +15,16 @@ module "vnet" {
   address_space       = ["10.254.0.0/16"]
 }
 
+module "vmss" {
+  source              = "./modules/vmss"
+  project_name = local.project_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.main.name
+  vnet_name           = module.vnet.name
+  sku = var.vmss_sku
+  instances = var.vmss_instances
+}
+
 module "appgw" {
   source              = "./modules/appgw"
   project_name = local.project_name
@@ -23,4 +33,5 @@ module "appgw" {
   vnet_name           = module.vnet.name
   sku_tier = "Standard_v2"
   capacity = 2
+  frontend_port = 80
 }

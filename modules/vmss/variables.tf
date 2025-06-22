@@ -23,17 +23,12 @@ variable "vnet_name" {
   type        = string
 }
 
-variable "sku_tier" {
-  description = "SKU Tier and Name"
+variable "sku" {
+  description = "SKU of VM-Scale Set"
   type        = string
 }
 
-variable "capacity" {
-  description = "Capacity of SKU"
-  type        = number
-}
-
-variable "frontend_port" {
-  description = "Frontend Port"
+variable "instances" {
+  description = "Number of VM instances"
   type        = number
 }

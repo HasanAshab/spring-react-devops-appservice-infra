@@ -20,5 +20,5 @@ variable "resource_group_name" {
 
 variable "address_space" {
   description = "Address Space"
-  type        = list(string)
+  type        = set(string)
 }
