@@ -32,3 +32,18 @@ variable "instances" {
   description = "Number of VM instances"
   type        = number
 }
+
+variable "admin_username" {
+  description = "Admin Username"
+  type        = string
+}
+
+variable "public_key" {
+  description = "Public Key of VMs"
+  type        = string
+}
+
+variable "backend_address_pool_ids" {
+  description = "Backend Address Pool IDs"
+  type        = set(string)
+}

@@ -1,3 +1,6 @@
-location     = "East US"
-node_count   = 1
-node_vm_size = "Standard_D2_v2"
+location = "eastus"
+
+# vmss
+vmss_sku             = "Standard_F2"
+vmss_instances       = 2
+vmss_public_key_path = "~/.ssh/hasan_rsa.pub"

@@ -17,3 +17,8 @@ variable "vmss_instances" {
   description = "Number of instances in VM-Scale Set"
   type        = number
 }
+
+variable "vmss_public_key_path" {
+  description = "Path to SSH Public Key"
+  type        = string
+}

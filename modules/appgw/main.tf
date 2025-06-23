@@ -1,19 +1,19 @@
 resource "azurerm_subnet" "appgw" {
-  name                 = "sn-appgw-${var.project_name}-${terraform.workspace}-001"
+  name                 = "sn-appgw-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = ["10.254.0.0/24"]
 }
 
 resource "azurerm_public_ip" "appgw" {
-  name                = "pip-appgw-${var.project_name}-${terraform.workspace}-001"
+  name                = "pip-appgw-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = "Static"
 }
 
 resource "azurerm_application_gateway" "main" {
-  name                = "appgw-${var.project_name}-${terraform.workspace}-001"
+  name                = "appgw-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name = var.resource_group_name
   location            = var.location
 
