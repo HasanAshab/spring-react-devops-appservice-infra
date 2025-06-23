@@ -57,3 +57,25 @@ variable "backend_address_pool_ids" {
   description = "Backend Address Pool IDs"
   type        = set(string)
 }
+
+variable "image_publisher" {
+  description = "Publisher of the OS image"
+  type        = string
+  default     = "Canonical"
+}
+
+variable "image_offer" {
+  description = "Offer of the OS image"
+  type        = string
+}
+
+variable "image_sku" {
+  description = "SKU/Variant of the OS image"
+  type        = string
+}
+
+variable "image_version" {
+  description = "Version of the OS image"
+  type        = string
+  default     = "latest"
+}

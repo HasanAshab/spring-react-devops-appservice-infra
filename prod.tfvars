@@ -7,4 +7,6 @@ appgw_port = 80
 # vm scale-set
 web_sku             = "Standard_F2"
 web_instances       = 2
+web_image_offer     = "0001-com-ubuntu-server-jammy"
+web_image_sku       = "22_04-lts"
 web_public_key_path = "~/.ssh/hasan_rsa.pub"

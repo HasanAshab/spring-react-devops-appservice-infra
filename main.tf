@@ -36,6 +36,8 @@ module "vmss_web" {
   sn_address_prefix        = "10.254.1.0/24"
   sku                      = var.web_sku
   instances                = var.web_instances
+  image_offer              = var.web_image_offer
+  image_sku                = var.web_image_sku
   admin_username           = "adminuser"
   public_key_path          = var.web_public_key_path
   custom_data_path         = "${path.module}/bin/web-init.sh"

@@ -28,6 +28,16 @@ variable "web_instances" {
   type        = number
 }
 
+variable "web_image_offer" {
+  description = "Offer of the OS image"
+  type        = string
+}
+
+variable "web_image_sku" {
+  description = "SKU/Variant of the OS image"
+  type        = string
+}
+
 variable "web_public_key_path" {
   description = "Path to SSH Public Key"
   type        = string
