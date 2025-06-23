@@ -4,7 +4,7 @@ location = "westeurope"
 appgw_sku  = "Standard_v2"
 appgw_port = 80
 
-# vm scale-set
+# web
 web_sku             = "Standard_F2"
 web_instances       = 2
 web_image_offer     = "0001-com-ubuntu-server-jammy"
