@@ -1,5 +1,5 @@
 output "url" {
-  value = "http://${azurerm_public_ip.appgw.ip_address}:${var.frontend_port}"
+  value = "http://${azurerm_public_ip.appgw.ip_address}:${var.port}"
 }
 
 output "backend_address_pool_ids" {
