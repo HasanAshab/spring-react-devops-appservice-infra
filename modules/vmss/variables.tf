@@ -48,11 +48,6 @@ variable "public_key_path" {
   type        = string
 }
 
-variable "custom_data_path" {
-  description = "Custom Data (init file) Path"
-  type        = string
-}
-
 variable "backend_address_pool_ids" {
   description = "Backend Address Pool IDs"
   type        = set(string)
@@ -78,4 +73,9 @@ variable "image_version" {
   description = "Version of the OS image"
   type        = string
   default     = "latest"
+}
+
+variable "custom_data" {
+  description = "Custom Data (init file)"
+  type        = string
 }

@@ -13,7 +13,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
   instances = var.instances
   sku = var.sku
   admin_username = var.admin_username
-  custom_data = base64encode(file(var.custom_data_path))
+  custom_data = var.custom_data
 
   admin_ssh_key {
     username   = var.admin_username

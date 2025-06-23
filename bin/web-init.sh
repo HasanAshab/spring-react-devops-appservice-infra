@@ -4,6 +4,8 @@ set -euo pipefail
 IMAGE="ghcr.io/hasanashab/spring-react-devops-frontend"
 TAG="latest"
 CONTAINER_NAME="frontend-app"
+API_URL="http://${backend_ip}:${backend_port}"
+
 
 echo "🔧 Updating package list..."
 apt-get update -y
@@ -37,6 +39,7 @@ echo "🏃 Running container..."
 docker run -d \
   --name "${CONTAINER_NAME}" \
   -p 80:80 \
+  -e API_URL="${API_URL}" \
   "${IMAGE}:${TAG}"
 
 echo "✅ Deployment completed successfully."
