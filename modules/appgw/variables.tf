@@ -23,6 +23,11 @@ variable "vnet_name" {
   type        = string
 }
 
+variable "sn_address_prefix" {
+  description = "Subnet Address Prefix"
+  type        = string
+}
+
 variable "sku_tier" {
   description = "SKU Tier and Name"
   type        = string
@@ -33,7 +38,37 @@ variable "capacity" {
   type        = number
 }
 
-variable "frontend_port" {
+variable "backend_cookie_based_affinity" {
+  description = "Cookie Based Affinity"
+  type        = string
+  default = "Disabled"
+}
+
+variable "backend_path" {
+  description = "Backend Path"
+  type        = string
+  default = "/"
+}
+
+variable "backend_port" {
+  description = "Backend Port"
+  type        = number
+  default = 80
+}
+
+variable "backend_protocol" {
+  description = "Protocol"
+  type        = string
+  default = "Http"
+}
+
+variable "backend_request_timeout" {
+  description = "Request Timeout"
+  type        = number
+  default = 60
+}
+
+variable "port" {
   description = "Frontend Port"
   type        = number
 }

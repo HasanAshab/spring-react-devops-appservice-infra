@@ -2,7 +2,7 @@ resource "azurerm_subnet" "vmss" {
   name                 = "sn-vmss-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = ["10.254.1.0/24"]
+  address_prefixes     = [ var.sn_address_prefix ]
 }
 
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
@@ -13,11 +13,11 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
   instances = var.instances
   sku = var.sku
   admin_username = var.admin_username
-  custom_data = base64encode(file("${path.module}/cloud-init.sh"))
+  custom_data = base64encode(file(var.custom_data_path))
 
   admin_ssh_key {
     username   = var.admin_username
-    public_key = var.public_key
+    public_key = file(var.public_key_path)
   }
 
   source_image_reference {

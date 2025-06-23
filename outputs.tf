@@ -1,3 +1,3 @@
-output "app_url" {
+output "web_url" {
   value = module.appgw.url
 }

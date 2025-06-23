@@ -2,7 +2,7 @@ resource "azurerm_subnet" "appgw" {
   name                 = "sn-appgw-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = ["10.254.0.0/24"]
+  address_prefixes     = [ var.sn_address_prefix ]
 }
 
 resource "azurerm_public_ip" "appgw" {
@@ -30,7 +30,7 @@ resource "azurerm_application_gateway" "main" {
 
   frontend_port {
     name = local.frontend_port_name
-    port = var.frontend_port
+    port = var.port
   }
 
   frontend_ip_configuration {
@@ -44,18 +44,18 @@ resource "azurerm_application_gateway" "main" {
 
   backend_http_settings {
     name                  = local.http_setting_name
-    cookie_based_affinity = "Disabled"
-    path                  = "/"
-    port                  = 80
-    protocol              = "Http"
-    request_timeout       = 60
+    cookie_based_affinity = var.backend_cookie_based_affinity
+    path                  = var.backend_path
+    port                  = var.backend_port
+    protocol              = var.backend_protocol
+    request_timeout       = var.backend_request_timeout
   }
 
   http_listener {
     name                           = local.listener_name
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
+    protocol                       = var.backend_protocol
   }
 
   request_routing_rule {

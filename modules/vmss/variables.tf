@@ -23,6 +23,11 @@ variable "vnet_name" {
   type        = string
 }
 
+variable "sn_address_prefix" {
+  description = "Subnet Address Prefix"
+  type        = string
+}
+
 variable "sku" {
   description = "SKU of VM-Scale Set"
   type        = string
@@ -38,8 +43,13 @@ variable "admin_username" {
   type        = string
 }
 
-variable "public_key" {
-  description = "Public Key of VMs"
+variable "public_key_path" {
+  description = "Public Key File Path of VMs"
+  type        = string
+}
+
+variable "custom_data_path" {
+  description = "Custom Data (init file) Path"
   type        = string
 }
 
