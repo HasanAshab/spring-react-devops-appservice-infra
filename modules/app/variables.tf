@@ -28,47 +28,39 @@ variable "snet_address_prefix" {
   type        = string
 }
 
-variable "sku_tier" {
-  description = "SKU Tier and Name"
+variable "sku" {
+  description = "SKU of VM-Scale Set"
   type        = string
 }
 
-variable "capacity" {
-  description = "Capacity of SKU"
+variable "worker_count" {
+  description = "Number of Workers"
   type        = number
 }
 
-variable "backend_cookie_based_affinity" {
-  description = "Cookie Based Affinity"
+variable "app_settings" {
+  description = "Application Settings"
+  type        = map(string)
+  default     = {}
+}
+
+variable "docker_registry_url" {
+  description = "Docker Registry URL"
   type        = string
-  default = "Disabled"
 }
 
-variable "backend_path" {
-  description = "Backend Path"
+variable "docker_image_name" {
+  description = "Docker Image Name"
   type        = string
-  default = "/"
 }
 
-variable "backend_port" {
-  description = "Backend Port"
-  type        = number
-  default = 80
-}
-
-variable "backend_protocol" {
-  description = "Protocol"
+variable "docker_image_tag" {
+  description = "Docker Image Tag"
   type        = string
-  default = "Http"
+  default = "latest"
 }
 
-variable "backend_request_timeout" {
-  description = "Request Timeout"
-  type        = number
-  default = 60
-}
-
-variable "port" {
-  description = "Frontend Port"
-  type        = number
+variable "private_dns_zone_id" {
+  description = "Private DNS Zone ID"
+  type        = string
 }
