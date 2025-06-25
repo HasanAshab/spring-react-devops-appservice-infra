@@ -2,7 +2,7 @@ resource "azurerm_subnet" "appgw" {
   name                 = "snet-appgw-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = [ var.snet_address_prefix ]
+  address_prefixes     = [var.snet_address_prefix]
 }
 
 resource "azurerm_public_ip" "appgw" {
@@ -60,7 +60,7 @@ resource "azurerm_application_gateway" "main" {
 
   request_routing_rule {
     name                       = local.request_routing_rule_name
-    priority                   = 9 
+    priority                   = 9
     rule_type                  = "Basic"
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name

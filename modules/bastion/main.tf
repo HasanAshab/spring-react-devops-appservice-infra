@@ -2,7 +2,7 @@ resource "azurerm_subnet" "bastion" {
   name                 = "AzureBastionSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = [ var.snet_address_prefix ]
+  address_prefixes     = [var.snet_address_prefix]
 }
 
 resource "azurerm_public_ip" "bastion" {

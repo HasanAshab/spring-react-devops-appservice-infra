@@ -41,31 +41,31 @@ variable "capacity" {
 variable "backend_cookie_based_affinity" {
   description = "Cookie Based Affinity"
   type        = string
-  default = "Disabled"
+  default     = "Disabled"
 }
 
 variable "backend_path" {
   description = "Backend Path"
   type        = string
-  default = "/"
+  default     = "/"
 }
 
 variable "backend_port" {
   description = "Backend Port"
   type        = number
-  default = 80
+  default     = 80
 }
 
 variable "backend_protocol" {
   description = "Protocol"
   type        = string
-  default = "Http"
+  default     = "Http"
 }
 
 variable "backend_request_timeout" {
   description = "Request Timeout"
   type        = number
-  default = 60
+  default     = 60
 }
 
 variable "port" {

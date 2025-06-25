@@ -57,7 +57,7 @@ variable "docker_image_name" {
 variable "docker_image_tag" {
   description = "Docker Image Tag"
   type        = string
-  default = "latest"
+  default     = "latest"
 }
 
 variable "private_dns_zone_id" {
