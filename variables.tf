@@ -37,6 +37,13 @@ variable "web_docker_image_name" {
   description = "Docker Image Name"
   type        = string
 }
+
+variable "web_docker_image_tag" {
+  description = "Docker Image Tag"
+  type        = string
+}
+
+
 variable "app_sku" {
   description = "SKU of VM-Scale Set"
   type        = string
@@ -54,5 +61,10 @@ variable "app_docker_registry_url" {
 
 variable "app_docker_image_name" {
   description = "Docker Image Name"
+  type        = string
+}
+
+variable "app_docker_image_tag" {
+  description = "Docker Image Tag"
   type        = string
 }

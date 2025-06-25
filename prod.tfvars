@@ -1,4 +1,4 @@
-location = "westeurope"
+location = "northeurope"
 
 # app gateway
 appgw_sku  = "Standard_v2"

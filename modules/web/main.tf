@@ -3,6 +3,14 @@ resource "azurerm_subnet" "main" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = [ var.snet_address_prefix ]
+
+  delegation {
+    name = "webapp-delegation"
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
 }
 
 resource "azurerm_service_plan" "main" {
