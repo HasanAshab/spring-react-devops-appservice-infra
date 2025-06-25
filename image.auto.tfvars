@@ -1,2 +1,2 @@
-web_docker_image_tag = "sha-408f927aa1a757d448bce7a8687cff5edb8e5426"
+web_docker_image_tag = "sha-2177f310b88800d15de42dd43935bc36445c10d0"
 app_docker_image_tag = "latest"
