@@ -1,0 +1,20 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        required: true
+        type: string
+        default: prod
+
+jobs:
+  terraform-destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Terraform Destroy
+        uses: dflook/terraform-destroy@v2
+        with:
+          workspace: ${{ github.event.inputs.workspace }}
