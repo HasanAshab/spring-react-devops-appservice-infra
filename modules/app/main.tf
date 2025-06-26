@@ -15,11 +15,12 @@ resource "azurerm_service_plan" "main" {
 }
 
 resource "azurerm_linux_web_app" "main" {
-  name                = "app-${var.project_name}-${terraform.workspace}-${var.location}-001"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  service_plan_id     = azurerm_service_plan.main.id
-  app_settings        = var.app_settings
+  name                          = "app-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  service_plan_id               = azurerm_service_plan.main.id
+  app_settings                  = var.app_settings
+  public_network_access_enabled = false
 
   site_config {
     application_stack {
