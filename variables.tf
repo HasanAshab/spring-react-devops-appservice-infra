@@ -8,16 +8,6 @@ variable "location" {
   }
 }
 
-variable "appgw_sku" {
-  description = "SKU of Application Gateway"
-  type        = string
-}
-
-variable "appgw_port" {
-  description = "Port of Application Gateway"
-  type        = number
-}
-
 variable "web_sku" {
   description = "SKU of VM-Scale Set"
   type        = string
@@ -66,5 +56,31 @@ variable "app_docker_image_name" {
 
 variable "app_docker_image_tag" {
   description = "Docker Image Tag"
+  type        = string
+}
+
+variable "mysql_sku" {
+  description = "SKU of MySQL Server"
+  type        = string
+}
+
+variable "mysql_version" {
+  description = "Version of MySQL Server"
+  type        = string
+}
+
+variable "mysql_admin_username" {
+  description = "Username for MySQL Server"
+  type        = string
+}
+
+variable "mysql_admin_password" {
+  description = "Password for MySQL Server"
+  type        = string
+  sensitive = true
+}
+
+variable "mysql_db_name" {
+  description = "Database Name"
   type        = string
 }
