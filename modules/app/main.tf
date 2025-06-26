@@ -20,6 +20,7 @@ resource "azurerm_linux_web_app" "main" {
   location            = var.location
   service_plan_id     = azurerm_service_plan.main.id
   app_settings        = var.app_settings
+  public_network_access_enabled = false
 
   site_config {
     application_stack {
