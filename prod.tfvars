@@ -1,10 +1,10 @@
-location = "eastus"
+location = "centralus"
 
 # mysql
-mysql_sku = "GP_Standard_D2ds_v4"
+mysql_sku = "B_Standard_B1ms"
 mysql_version = "8.0.21"
-mysql_admin_username = "mysqladminuser1234"
-mysql_admin_password = "someverysecretpassword.123"
+mysql_admin_username = "hasan"
+mysql_admin_password = "averysecurepassword.123"
 mysql_db_name = "db1"
 
 # app
