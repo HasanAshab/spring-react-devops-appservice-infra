@@ -1,1 +1,1 @@
-app_docker_image_tag = "sha-90f09a9c08ee866d0f305431d1a7f05470b2fd44"
+app_docker_image_tag = "sha-cbe36cbc041c06ddeb23e85ea478f18f63571052"
