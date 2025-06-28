@@ -1,4 +1,4 @@
-resource "azurerm_subnet" "main" {
+resource "azurerm_subnet" "this" {
   name                 = "snet-web-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
@@ -13,7 +13,7 @@ resource "azurerm_subnet" "main" {
   }
 }
 
-resource "azurerm_service_plan" "main" {
+resource "azurerm_service_plan" "this" {
   name                = "sp-web-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -22,11 +22,11 @@ resource "azurerm_service_plan" "main" {
   worker_count        = var.worker_count
 }
 
-resource "azurerm_linux_web_app" "main" {
+resource "azurerm_linux_web_app" "this" {
   name                = "web-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name = var.resource_group_name
   location            = var.location
-  service_plan_id     = azurerm_service_plan.main.id
+  service_plan_id     = azurerm_service_plan.this.id
   app_settings        = var.app_settings
 
   site_config {
@@ -37,7 +37,7 @@ resource "azurerm_linux_web_app" "main" {
   }
 }
 
-resource "azurerm_app_service_virtual_network_swift_connection" "main" {
-  app_service_id = azurerm_linux_web_app.main.id
-  subnet_id      = azurerm_subnet.main.id
+resource "azurerm_app_service_virtual_network_swift_connection" "this" {
+  app_service_id = azurerm_linux_web_app.this.id
+  subnet_id      = azurerm_subnet.this.id
 }
