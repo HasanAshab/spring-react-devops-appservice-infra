@@ -1,11 +1,11 @@
 location = "centralus"
 
 # mysql
-mysql_sku = "B_Standard_B1ms"
-mysql_version = "8.0.21"
+mysql_sku            = "B_Standard_B1ms"
+mysql_version        = "8.0.21"
 mysql_admin_username = "hasan"
 mysql_admin_password = "averysecurepassword.123"
-mysql_db_name = "db1"
+mysql_db_name        = "db1"
 
 # app
 app_sku                 = "B1"

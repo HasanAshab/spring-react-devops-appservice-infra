@@ -45,16 +45,16 @@ variable "db_version" {
 
 variable "admin_username" {
   description = "Username for MySQL Server"
-  type = string
+  type        = string
 }
 
 variable "admin_password" {
   description = "Password for MySQL Server"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
 variable "db_name" {
   description = "Database Name"
-  type = string
+  type        = string
 }

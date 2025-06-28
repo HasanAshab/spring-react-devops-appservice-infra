@@ -30,8 +30,8 @@ module "mysql" {
   vnet_name           = module.network.name
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 2)
   private_dns_zone_id = module.dns.zone_id
-  sku = var.mysql_sku
-  db_version = var.mysql_version
+  sku                 = var.mysql_sku
+  db_version          = var.mysql_version
   admin_username      = var.mysql_admin_username
   admin_password      = var.mysql_admin_password
   db_name             = var.mysql_db_name
@@ -58,16 +58,16 @@ module "app" {
   }
 }
 
-# module "web" {
-#   source              = "./modules/web"
-#   project_name        = local.project_name
-#   location            = var.location
-#   resource_group_name = azurerm_resource_group.this.name
-#   vnet_name           = module.network.name
-#   snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 0)
-#   sku                 = var.web_sku
-#   worker_count        = var.web_worker_count
-#   docker_registry_url = var.web_docker_registry_url
-#   docker_image_name   = var.web_docker_image_name
-#   docker_image_tag    = var.web_docker_image_tag
-# }
+module "web" {
+  source              = "./modules/web"
+  project_name        = local.project_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.this.name
+  vnet_name           = module.network.name
+  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 0)
+  sku                 = var.web_sku
+  worker_count        = var.web_worker_count
+  docker_registry_url = var.web_docker_registry_url
+  docker_image_name   = var.web_docker_image_name
+  docker_image_tag    = var.web_docker_image_tag
+}

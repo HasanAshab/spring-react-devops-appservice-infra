@@ -82,7 +82,7 @@ variable "mysql_admin_username" {
 variable "mysql_admin_password" {
   description = "Password for MySQL Server"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "mysql_db_name" {
