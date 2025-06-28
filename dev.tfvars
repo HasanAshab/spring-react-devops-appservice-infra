@@ -1,12 +1,21 @@
-location = "westeurope"
+location = "centralus"
 
-# app gateway
-appgw_sku  = "Standard_v2"
-appgw_port = 80
+# mysql
+mysql_sku            = "B_Standard_B1ms"
+mysql_version        = "8.0.21"
+mysql_admin_username = "hasan"
+mysql_admin_password = "averysecurepassword.123"
+mysql_db_name        = "db1"
+
+# app
+app_sku                 = "B1"
+app_worker_count        = 1
+app_docker_registry_url = "https://ghcr.io/hasanashab"
+app_docker_image_name   = "spring-react-devops-appservice-backend"
 
 # web
-web_sku             = "F1"
-web_instances       = 2
-web_image_offer     = "0001-com-ubuntu-server-jammy"
-web_image_sku       = "22_04-lts"
-web_public_key_path = "~/.ssh/hasan_rsa.pub"
+web_sku                 = "B1"
+web_worker_count        = 1
+web_docker_registry_url = "https://ghcr.io/hasanashab"
+web_docker_image_name   = "spring-react-devops-appservice-frontend"
+
