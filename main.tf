@@ -54,6 +54,7 @@ module "app" {
     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.mysql.fqdn}:3306/${var.mysql_db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
     "SPRING_DATASOURCE_USERNAME" = var.mysql_admin_username
     "SPRING_DATASOURCE_PASSWORD" = var.mysql_admin_password
+    "SERVER_PORT"                = var.app_port
   }
 }
 

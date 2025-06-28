@@ -59,6 +59,11 @@ variable "app_docker_image_tag" {
   type        = string
 }
 
+variable "app_port" {
+  description = "Port of Application"
+  default     = 80
+}
+
 variable "mysql_sku" {
   description = "SKU of MySQL Server"
   type        = string

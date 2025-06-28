@@ -13,8 +13,6 @@ resource "azurerm_subnet" "this" {
   }
 }
 
-
-
 resource "azurerm_service_plan" "this" {
   name                = "sp-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
   resource_group_name = var.resource_group_name
