@@ -11,7 +11,7 @@ mysql_db_name = "db1"
 app_sku                 = "B1"
 app_worker_count        = 2
 app_docker_registry_url = "https://ghcr.io/hasanashab"
-app_docker_image_name   = "spring-react-devops-backend"
+app_docker_image_name   = "spring-react-devops-appservice-backend"
 
 # web
 web_sku                 = "B1"

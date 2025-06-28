@@ -18,6 +18,21 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "vnet_name" {
+  description = "Virtual Network Name"
+  type        = string
+}
+
+variable "snet_address_prefix" {
+  description = "Subnet Address Prefix"
+  type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "Private DNS Zone ID"
+  type        = string
+}
+
 variable "sku" {
   description = "SKU of MySQL Server"
   type        = string
@@ -43,4 +58,3 @@ variable "db_name" {
   description = "Database Name"
   type = string
 }
-

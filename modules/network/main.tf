@@ -1,4 +1,4 @@
-resource "azurerm_virtual_network" "main" {
+resource "azurerm_virtual_network" "this" {
   name                = "vnet-${var.project_name}-${terraform.workspace}-${var.location}-001"
   location            = var.location
   resource_group_name = var.resource_group_name
