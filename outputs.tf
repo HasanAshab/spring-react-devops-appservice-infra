@@ -1,7 +1,9 @@
 output "app_url" {
-  value = "https://${module.app.name}.${local.dns_zone_name}:${var.app_port}"
+  description = "Backend App URL"
+  value       = "${module.app.url}:${var.app_port}"
 }
 
 output "web_url" {
-  value = module.web.url
+  description = "Frontend Web URL"
+  value       = module.web.url
 }

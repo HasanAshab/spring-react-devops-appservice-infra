@@ -1,0 +1,1 @@
+dotenv -- terraform apply -auto-approve -var-file=prod.tfvars

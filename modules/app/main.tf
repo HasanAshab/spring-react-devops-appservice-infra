@@ -20,6 +20,9 @@ resource "azurerm_linux_web_app" "this" {
       docker_registry_url = var.docker_registry_url
       docker_image_name   = "${var.docker_image_name}:${var.docker_image_tag}"
     }
+    cors {
+      allowed_origins = ["*"]
+    }
   }
 }
 
@@ -28,6 +31,8 @@ resource "azurerm_subnet" "pe" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = ["10.254.4.0/24"]
+
+  private_endpoint_network_policies = "Enabled"
 }
 
 resource "azurerm_private_endpoint" "app" {
