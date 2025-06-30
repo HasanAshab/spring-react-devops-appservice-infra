@@ -1,1 +1,1 @@
-web_docker_image_tag = "sha-d7a47c33d55f30eb977b2ebda8006e96f123f622"
+web_docker_image_tag = "sha-e833070dc3dd78a7839bbc76d2b8152719178607"
