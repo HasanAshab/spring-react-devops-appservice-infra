@@ -25,7 +25,7 @@ resource "azurerm_mysql_flexible_server" "this" {
   version                = var.db_version
 
   geo_redundant_backup_enabled = false
-  delegated_subnet_id          = azurerm_subnet.this.id
+  # delegated_subnet_id          = azurerm_subnet.this.id
   storage {
     size_gb = 20
   }
