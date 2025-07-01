@@ -23,22 +23,22 @@ resource "azurerm_linux_web_app" "this" {
 }
 
 
-resource "azurerm_subnet" "vnet_integration" {
-  name                 = "snet-web-${var.project_name}-${terraform.workspace}-${var.location}-001"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.vnet_name
-  address_prefixes     = [var.snet_address_prefix]
+# resource "azurerm_subnet" "vnet_integration" {
+#   name                 = "snet-web-${var.project_name}-${terraform.workspace}-${var.location}-001"
+#   resource_group_name  = var.resource_group_name
+#   virtual_network_name = var.vnet_name
+#   address_prefixes     = [var.snet_address_prefix]
 
-  delegation {
-    name = "webapp-delegation"
-    service_delegation {
-      name    = "Microsoft.Web/serverFarms"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-    }
-  }
-}
+#   delegation {
+#     name = "webapp"
+#     service_delegation {
+#       name    = "Microsoft.Web/serverFarms"
+#       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+#     }
+#   }
+# }
 
-resource "azurerm_app_service_virtual_network_swift_connection" "this" {
-  app_service_id = azurerm_linux_web_app.this.id
-  subnet_id      = azurerm_subnet.vnet_integration.id
-}
+# resource "azurerm_app_service_virtual_network_swift_connection" "this" {
+#   app_service_id = azurerm_linux_web_app.this.id
+#   subnet_id      = azurerm_subnet.vnet_integration.id
+# }

@@ -43,6 +43,11 @@ variable "db_version" {
   type        = string
 }
 
+variable "db_name" {
+  description = "Database Name"
+  type        = string
+}
+
 variable "admin_username" {
   description = "Username for MySQL Server"
   type        = string
@@ -54,7 +59,38 @@ variable "admin_password" {
   sensitive   = true
 }
 
-variable "db_name" {
-  description = "Database Name"
+variable "geo_redundant_backup_enabled" {
+  description = "Enable Geo-redundant Backup"
+  type        = bool
+  default     = false
+}
+
+variable "backup_retention_days" {
+  description = "Backup Retention Days"
+  type        = number
+  default     = 7
+}
+
+variable "storage_size_gb" {
+  description = "Storage Size (GB)"
+  type        = number
+  default     = 20
+}
+
+variable "storage_auto_grow_enabled" {
+  description = "Enable Storage Auto Grow"
+  type        = bool
+  default     = false
+}
+
+variable "charset" {
+  description = "Charset of Database"
   type        = string
+  default     = "utf8mb4"
+}
+
+variable "collation" {
+  description = "Collation of Database"
+  type        = string
+  default     = "utf8mb4_unicode_ci"
 }

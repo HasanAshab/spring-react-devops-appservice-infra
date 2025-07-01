@@ -1,6 +1,6 @@
 output "app_url" {
   description = "Backend App URL"
-  value       = "${module.app.url}:${var.app_port}"
+  value       = module.app.url
 }
 
 output "web_url" {

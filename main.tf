@@ -15,9 +15,9 @@ module "network" {
   address_space       = [local.vnet_cidr]
 }
 
-module "dns" {
+module "dns_db" {
   source              = "./modules/dns"
-  name                = local.dns_zone_name
+  name                = local.db_dns_zone_name
   resource_group_name = azurerm_resource_group.this.name
   vnet_id             = module.network.id
 }
@@ -29,7 +29,7 @@ module "mysql" {
   resource_group_name = azurerm_resource_group.this.name
   vnet_name           = module.network.name
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 2)
-  private_dns_zone_id = module.dns.zone_id
+  private_dns_zone_id = module.dns_db.zone_id
   sku                 = var.mysql_sku
   db_version          = var.mysql_version
   admin_username      = var.mysql_admin_username
@@ -44,7 +44,7 @@ module "app" {
   resource_group_name = azurerm_resource_group.this.name
   vnet_name           = module.network.name
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 1)
-  private_dns_zone_id = module.dns.zone_id
+  private_dns_zone_id = 1 #TODO remove
   sku                 = var.app_sku
   worker_count        = var.app_worker_count
   docker_registry_url = var.app_docker_registry_url
@@ -71,60 +71,3 @@ module "web" {
   docker_image_name   = var.web_docker_image_name
   docker_image_tag    = var.web_docker_image_tag
 }
-
-
-
-
-
-# resource "azurerm_public_ip" "dns-testing" {
-#   name                = "pip-dns-testing"
-#   resource_group_name = azurerm_resource_group.this.name
-#   location            = var.location
-#   allocation_method   = "Static"
-# }
-# resource "azurerm_subnet" "dns-testing" {
-#   name                 = "snet-dns-testing"
-#   resource_group_name  = azurerm_resource_group.this.name
-#   virtual_network_name = module.network.name
-#   address_prefixes     = [cidrsubnet(local.vnet_cidr, 8, 3)]
-
-# }
-
-# resource "azurerm_network_interface" "dns-testing" {
-#   name                = "dns-testing"
-#   location            = var.location
-#   resource_group_name = azurerm_resource_group.this.name
-
-#   ip_configuration {
-#     name                          = "internal"
-#     subnet_id                     = azurerm_subnet.dns-testing.id
-#     private_ip_address_allocation = "Dynamic"
-#     public_ip_address_id = azurerm_public_ip.dns-testing.id
-#   } 
-# }
-
-# resource "azurerm_linux_virtual_machine" "dns-testing" {
-#   name                = "dns-testing"
-#   resource_group_name = azurerm_resource_group.this.name
-#   location            = var.location
-#   size                = "Standard_B1s"
-#   admin_username      = "adminuser"
-#   network_interface_ids = [
-#     azurerm_network_interface.dns-testing.id
-#   ]
-
-#   admin_ssh_key {
-#     username   = "adminuser"
-#     public_key = file("~/.ssh/hasan_rsa.pub")
-#   }
-#   os_disk {
-#     caching              = "ReadWrite"
-#     storage_account_type = "Standard_LRS"
-#   }
-#   source_image_reference {
-#     publisher = "Canonical"
-#     offer     = "UbuntuServer"
-#     sku       = "18.04-LTS"
-#     version   = "latest"
-#   }
-# }

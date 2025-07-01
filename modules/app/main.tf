@@ -8,48 +8,66 @@ resource "azurerm_service_plan" "this" {
 }
 
 resource "azurerm_linux_web_app" "this" {
-  name                          = "app-${var.project_name}-${terraform.workspace}-${var.location}-001"
-  resource_group_name           = var.resource_group_name
-  location                      = var.location
-  service_plan_id               = azurerm_service_plan.this.id
-  app_settings                  = var.app_settings
-  public_network_access_enabled = false
+  name                = "app-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  service_plan_id     = azurerm_service_plan.this.id
+  app_settings        = var.app_settings
 
   site_config {
+    vnet_route_all_enabled = true
+
     application_stack {
       docker_registry_url = var.docker_registry_url
       docker_image_name   = "${var.docker_image_name}:${var.docker_image_tag}"
     }
-    cors {
-      allowed_origins = ["*"]
+  }
+}
+
+resource "azurerm_subnet" "vnet_integration" {
+  name                 = "snet-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = var.vnet_name
+  address_prefixes     = [var.snet_address_prefix]
+
+  delegation {
+    name = "webapp"
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
 }
 
-resource "azurerm_subnet" "pe" {
-  name                 = "snet-pe-${var.project_name}-${terraform.workspace}-${var.location}-001"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.vnet_name
-  address_prefixes     = ["10.254.4.0/24"]
-
-  private_endpoint_network_policies = "Enabled"
+resource "azurerm_app_service_virtual_network_swift_connection" "this" {
+  app_service_id = azurerm_linux_web_app.this.id
+  subnet_id      = azurerm_subnet.vnet_integration.id
 }
 
-resource "azurerm_private_endpoint" "app" {
-  name                = "pe-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  subnet_id           = azurerm_subnet.pe.id
+# resource "azurerm_subnet" "pe" {
+#   name                 = "snet-pe-${var.project_name}-${terraform.workspace}-${var.location}-001"
+#   resource_group_name  = var.resource_group_name
+#   virtual_network_name = var.vnet_name
+#   address_prefixes     = ["10.254.4.0/24"]
 
-  private_service_connection {
-    name                           = "default"
-    private_connection_resource_id = azurerm_linux_web_app.this.id
-    subresource_names              = ["sites"]
-    is_manual_connection           = false
-  }
+#   private_endpoint_network_policies = "Enabled"
+# }
 
-  private_dns_zone_group {
-    name                 = "default"
-    private_dns_zone_ids = [var.private_dns_zone_id]
-  }
-}
+# resource "azurerm_private_endpoint" "app" {
+#   name                = "pe-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   subnet_id           = azurerm_subnet.pe.id
+
+#   private_service_connection {
+#     name                           = "default"
+#     private_connection_resource_id = azurerm_linux_web_app.this.id
+#     subresource_names              = ["sites"]
+#     is_manual_connection           = false
+#   }
+
+#   private_dns_zone_group {
+#     name                 = "default"
+#     private_dns_zone_ids = [var.private_dns_zone_id]
+#   }
+# }
