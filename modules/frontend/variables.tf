@@ -1,6 +1,7 @@
-variable "name" {
-  description = "Web Name"
-  type        = string
+variable "naming_suffix" {
+  description = "Naming Suffix"
+  type        = set(string)
+  default     = []
 }
 
 variable "location" {
@@ -49,3 +50,4 @@ variable "docker_image_tag" {
   type        = string
   default     = "latest"
 }
+

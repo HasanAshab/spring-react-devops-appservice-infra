@@ -103,7 +103,7 @@ module "backend" {
 
 module "frontend" {
   source              = "./modules/frontend"
-  name                = module.naming.app_service.name_unique
+  naming_suffix       = [local.project_name, terraform.workspace, var.location]
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
   sku                 = var.frontend_sku

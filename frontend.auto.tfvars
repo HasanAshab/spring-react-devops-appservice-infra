@@ -1,0 +1,1 @@
+frontend_docker_image_tag = "sha-07bd5feeb308618d45ea8cdf8c3b812ae129d486"
