@@ -1,5 +1,5 @@
 resource "azurerm_mysql_flexible_server" "this" {
-  name                         = "mysql-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  name                         = var.name
   location                     = var.location
   resource_group_name          = var.resource_group_name
   administrator_login          = var.admin_username

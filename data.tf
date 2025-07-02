@@ -3,12 +3,12 @@ data "azurerm_key_vault" "this" {
   resource_group_name = "terraform"
 }
 
-data "azurerm_key_vault_secret" "mysql_admin_username" {
+data "azurerm_key_vault_secret" "database_admin_username" {
   name         = "mysql-admin-username"
   key_vault_id = data.azurerm_key_vault.this.id
 }
 
-data "azurerm_key_vault_secret" "mysql_admin_password" {
+data "azurerm_key_vault_secret" "database_admin_password" {
   name         = "mysql-admin-password"
   key_vault_id = data.azurerm_key_vault.this.id
 }

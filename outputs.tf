@@ -1,9 +1,9 @@
-output "app_url" {
+output "backend_url" {
   description = "Backend App URL"
-  value       = module.app.url
+  value       = module.backend.url
 }
 
-output "web_url" {
+output "frontend_url" {
   description = "Frontend Web URL"
-  value       = module.web.url
+  value       = module.frontend.url
 }

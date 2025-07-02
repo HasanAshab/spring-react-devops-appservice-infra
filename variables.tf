@@ -8,78 +8,75 @@ variable "location" {
   }
 }
 
-# MySQL
-
-variable "mysql_sku" {
+# Database
+variable "database_sku" {
   description = "SKU of MySQL Server"
   type        = string
 }
 
-variable "mysql_version" {
+variable "database_version" {
   description = "Version of MySQL Server"
   type        = string
 }
 
-variable "mysql_db_name" {
+variable "database_name" {
   description = "Database Name"
   type        = string
 }
 
-# App
-
-variable "app_sku" {
+# Backend
+variable "backend_sku" {
   description = "SKU of VM-Scale Set"
   type        = string
 }
 
-variable "app_worker_count" {
+variable "backend_worker_count" {
   description = "Number of Workers"
   type        = number
 }
 
-variable "app_docker_registry_url" {
+variable "backend_docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
 }
 
-variable "app_docker_image_name" {
+variable "backend_docker_image_name" {
   description = "Docker Image Name"
   type        = string
 }
 
-variable "app_docker_image_tag" {
+variable "backend_docker_image_tag" {
   description = "Docker Image Tag"
   type        = string
 }
 
-variable "app_port" {
+variable "backend_port" {
   description = "Port of Application"
   default     = 80
 }
 
-# Web
-
-variable "web_sku" {
+# Frontend
+variable "frontend_sku" {
   description = "SKU of VM-Scale Set"
   type        = string
 }
 
-variable "web_worker_count" {
+variable "frontend_worker_count" {
   description = "Number of Workers"
   type        = number
 }
 
-variable "web_docker_registry_url" {
+variable "frontend_docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
 }
 
-variable "web_docker_image_name" {
+variable "frontend_docker_image_name" {
   description = "Docker Image Name"
   type        = string
 }
 
-variable "web_docker_image_tag" {
+variable "frontend_docker_image_tag" {
   description = "Docker Image Tag"
   type        = string
 }

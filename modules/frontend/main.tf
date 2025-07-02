@@ -8,7 +8,7 @@ resource "azurerm_service_plan" "this" {
 }
 
 resource "azurerm_linux_web_app" "this" {
-  name                = "web-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  name                = var.name
   resource_group_name = var.resource_group_name
   location            = var.location
   service_plan_id     = azurerm_service_plan.this.id
