@@ -1,6 +1,7 @@
-variable "name" {
-  description = "MySQL Server Name"
-  type        = string
+variable "extra_naming_suffix" {
+  description = "Extra Naming Suffix (db-*)"
+  type        = list(string)
+  default     = []
 }
 
 variable "location" {

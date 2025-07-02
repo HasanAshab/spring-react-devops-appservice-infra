@@ -1,5 +1,11 @@
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  version = "0.4.2"
+  suffix  = concat(local.naming_suffix, var.extra_naming_suffix)
+}
+
 resource "azurerm_service_plan" "this" {
-  name                = "sp-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  name                = module.naming.app_service_plan.name
   resource_group_name = var.resource_group_name
   location            = var.location
   os_type             = "Linux"
@@ -8,7 +14,7 @@ resource "azurerm_service_plan" "this" {
 }
 
 resource "azurerm_linux_web_app" "this" {
-  name                = "app-${var.project_name}-${terraform.workspace}-${var.location}-001"
+  name                = module.naming.app_service.name
   resource_group_name = var.resource_group_name
   location            = var.location
   service_plan_id     = azurerm_service_plan.this.id

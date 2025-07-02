@@ -1,6 +1,6 @@
-variable "naming_suffix" {
-  description = "Naming Suffix"
-  type        = set(string)
+variable "extra_naming_suffix" {
+  description = "Extra Naming Suffix (fe-*)"
+  type        = list(string)
   default     = []
 }
 

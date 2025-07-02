@@ -1,5 +1,11 @@
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  version = "0.4.2"
+  suffix  = concat(local.naming_suffix, var.extra_naming_suffix)
+}
+
 resource "azurerm_mysql_flexible_server" "this" {
-  name                         = var.name
+  name                         = module.naming.mysql_flexible_server.name
   location                     = var.location
   resource_group_name          = var.resource_group_name
   administrator_login          = var.admin_username

@@ -1,7 +1,7 @@
 module "naming" {
   source  = "Azure/naming/azurerm"
   version = "0.4.2"
-  suffix  = concat(local.naming_suffix, var.naming_suffix)
+  suffix  = concat(local.naming_suffix, var.extra_naming_suffix)
 }
 
 resource "azurerm_service_plan" "this" {
@@ -30,7 +30,7 @@ resource "azurerm_linux_web_app" "this" {
 
 
 # resource "azurerm_subnet" "vnet_integration" {
-#   name                 = "snet-web-${var.project_name}-${terraform.workspace}-${var.location}-001"
+#   name                 = module.naming.subnet.name
 #   resource_group_name  = var.resource_group_name
 #   virtual_network_name = var.vnet_name
 #   address_prefixes     = [var.snet_address_prefix]

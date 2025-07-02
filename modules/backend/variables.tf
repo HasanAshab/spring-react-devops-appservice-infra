@@ -1,6 +1,7 @@
-variable "project_name" {
-  description = "Project Name"
-  type        = string
+variable "extra_naming_suffix" {
+  description = "Extra Naming Suffix (be-*)"
+  type        = list(string)
+  default     = []
 }
 
 variable "location" {
@@ -56,7 +57,7 @@ variable "docker_image_tag" {
   default     = "latest"
 }
 
-variable "private_dns_zone_id" {
-  description = "Private DNS Zone ID"
-  type        = string
-}
+# variable "private_dns_zone_id" {
+#   description = "Private DNS Zone ID"
+#   type        = string
+# }

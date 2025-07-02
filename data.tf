@@ -4,11 +4,11 @@ data "azurerm_key_vault" "this" {
 }
 
 data "azurerm_key_vault_secret" "database_admin_username" {
-  name         = "mysql-admin-username"
+  name         = "database-admin-username"
   key_vault_id = data.azurerm_key_vault.this.id
 }
 
 data "azurerm_key_vault_secret" "database_admin_password" {
-  name         = "mysql-admin-password"
+  name         = "database-admin-password"
   key_vault_id = data.azurerm_key_vault.this.id
 }
