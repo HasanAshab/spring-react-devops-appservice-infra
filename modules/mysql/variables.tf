@@ -18,13 +18,8 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "vnet_name" {
-  description = "Virtual Network Name"
-  type        = string
-}
-
-variable "snet_address_prefix" {
-  description = "Subnet Address Prefix"
+variable "snet_id" {
+  description = "Virtual Network Integration Subnet ID"
   type        = string
 }
 

@@ -18,15 +18,11 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "vnet_name" {
-  description = "Virtual Network Name"
+variable "snet_id" {
+  description = "Virtual Network Integration Subnet ID"
   type        = string
 }
 
-variable "snet_address_prefix" {
-  description = "Subnet Address Prefix"
-  type        = string
-}
 
 variable "sku" {
   description = "SKU of VM-Scale Set"

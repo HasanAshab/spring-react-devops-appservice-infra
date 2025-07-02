@@ -8,18 +8,53 @@ resource "azurerm_resource_group" "this" {
 }
 
 module "network" {
-  source              = "./modules/network"
-  project_name        = local.project_name
-  location            = var.location
-  resource_group_name = azurerm_resource_group.this.name
+  source              = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version             = "0.9.1"
   address_space       = [local.vnet_cidr]
+  location            = var.location
+  name                = "vnet-${local.project_name}-${terraform.workspace}-${var.location}-001"
+  resource_group_name = azurerm_resource_group.this.name
+  subnets = {
+    mysql = {
+      name              = "mysql"
+      address_prefixes  = [cidrsubnet(local.vnet_cidr, 8, 1)]
+      service_endpoints = ["Microsoft.Storage"]
+      delegations = [
+        {
+          name = "fs"
+          service_delegation = {
+            name    = "Microsoft.DBforMySQL/flexibleServers"
+            actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+          }
+        }
+      ]
+    }
+    app = {
+      name             = "app"
+      address_prefixes = [cidrsubnet(local.vnet_cidr, 8, 2)]
+      delegations = [
+        {
+          name = "webapp"
+          service_delegation = {
+            name    = "Microsoft.Web/serverFarms"
+            actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+          }
+        }
+      ]
+    }
+  }
+
+  tags = {
+    Environment = terraform.workspace
+    Service     = local.project_name
+  }
 }
 
 module "dns_db" {
   source              = "./modules/dns"
   name                = local.db_dns_zone_name
   resource_group_name = azurerm_resource_group.this.name
-  vnet_id             = module.network.id
+  vnet_id             = module.network.resource_id
 }
 
 module "mysql" {
@@ -27,8 +62,7 @@ module "mysql" {
   project_name        = local.project_name
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  vnet_name           = module.network.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 2)
+  snet_id             = module.network.subnets["mysql"].id
   private_dns_zone_id = module.dns_db.zone_id
   sku                 = var.mysql_sku
   db_version          = var.mysql_version
@@ -42,8 +76,7 @@ module "app" {
   project_name        = local.project_name
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  vnet_name           = module.network.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 1)
+  snet_id             = module.network.subnets["app"].id
   private_dns_zone_id = 1 #TODO remove
   sku                 = var.app_sku
   worker_count        = var.app_worker_count
@@ -63,8 +96,6 @@ module "web" {
   project_name        = local.project_name
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  vnet_name           = module.network.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 0)
   sku                 = var.web_sku
   worker_count        = var.web_worker_count
   docker_registry_url = var.web_docker_registry_url

@@ -1,20 +1,3 @@
-resource "azurerm_subnet" "this" {
-  name                 = "snet-mysql-${var.project_name}-${terraform.workspace}-${var.location}-001"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.vnet_name
-  address_prefixes     = [var.snet_address_prefix]
-  service_endpoints    = ["Microsoft.Storage"]
-  delegation {
-    name = "fs"
-    service_delegation {
-      name = "Microsoft.DBforMySQL/flexibleServers"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-      ]
-    }
-  }
-}
-
 resource "azurerm_mysql_flexible_server" "this" {
   name                         = "mysql-${var.project_name}-${terraform.workspace}-${var.location}-001"
   location                     = var.location
@@ -26,7 +9,7 @@ resource "azurerm_mysql_flexible_server" "this" {
   geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
   backup_retention_days        = var.backup_retention_days
   private_dns_zone_id          = var.private_dns_zone_id
-  delegated_subnet_id          = azurerm_subnet.this.id
+  delegated_subnet_id          = var.snet_id
 
   storage {
     size_gb            = var.storage_size_gb
