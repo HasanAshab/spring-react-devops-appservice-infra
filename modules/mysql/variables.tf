@@ -83,6 +83,19 @@ variable "storage_auto_grow_enabled" {
   default     = false
 }
 
+variable "storage_iops" {
+  description = "Storage IOPS"
+  type        = number
+  nullable    = true
+  default     = null
+}
+
+variable "storage_io_scaling_enabled" {
+  description = "Enable Storage I/O Scaling"
+  type        = bool
+  default     = false
+}
+
 variable "charset" {
   description = "Charset of Database"
   type        = string

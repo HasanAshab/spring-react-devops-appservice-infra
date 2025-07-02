@@ -32,8 +32,8 @@ module "mysql" {
   private_dns_zone_id = module.dns_db.zone_id
   sku                 = var.mysql_sku
   db_version          = var.mysql_version
-  admin_username      = var.mysql_admin_username
-  admin_password      = var.mysql_admin_password
+  admin_username      = local.mysql_admin_username
+  admin_password      = local.mysql_admin_password
   db_name             = var.mysql_db_name
 }
 
@@ -52,8 +52,8 @@ module "app" {
   docker_image_tag    = var.app_docker_image_tag
   app_settings = {
     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.mysql.fqdn}:3306/${var.mysql_db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
-    "SPRING_DATASOURCE_USERNAME" = var.mysql_admin_username
-    "SPRING_DATASOURCE_PASSWORD" = var.mysql_admin_password
+    "SPRING_DATASOURCE_USERNAME" = local.mysql_admin_username
+    "SPRING_DATASOURCE_PASSWORD" = local.mysql_admin_password
     "SERVER_PORT"                = var.app_port
   }
 }

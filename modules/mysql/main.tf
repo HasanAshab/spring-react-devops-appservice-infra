@@ -29,8 +29,10 @@ resource "azurerm_mysql_flexible_server" "this" {
   delegated_subnet_id          = azurerm_subnet.this.id
 
   storage {
-    size_gb           = var.storage_size_gb
-    auto_grow_enabled = var.storage_auto_grow_enabled
+    size_gb            = var.storage_size_gb
+    auto_grow_enabled  = var.storage_auto_grow_enabled
+    iops               = var.storage_iops
+    io_scaling_enabled = var.storage_io_scaling_enabled
   }
 }
 
@@ -41,11 +43,3 @@ resource "azurerm_mysql_flexible_database" "this" {
   charset             = var.charset
   collation           = var.collation
 }
-
-# resource "azurerm_mysql_flexible_server_firewall_rule" "this" {
-#   name                = "allow-all"
-#   resource_group_name = var.resource_group_name
-#   server_name         = azurerm_mysql_flexible_server.this.name
-#   start_ip_address    = "0.0.0.0"
-#   end_ip_address      = "0.0.0.0"
-# }

@@ -20,17 +20,6 @@ variable "mysql_version" {
   type        = string
 }
 
-variable "mysql_admin_username" {
-  description = "Username for MySQL Server"
-  type        = string
-}
-
-variable "mysql_admin_password" {
-  description = "Password for MySQL Server"
-  type        = string
-  sensitive   = true
-}
-
 variable "mysql_db_name" {
   description = "Database Name"
   type        = string
