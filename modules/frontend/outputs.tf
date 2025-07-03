@@ -1,3 +1,3 @@
 output "url" {
-  value = "https://${azurerm_linux_web_app.this.default_hostname}"
+  value = "https://${module.webapp.resource_uri}"
 }

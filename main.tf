@@ -23,43 +23,11 @@ resource "azurerm_resource_group" "this" {
   }
 }
 
-module "network" {
-  source              = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version             = "0.9.1"
-  address_space       = [local.vnet_cidr]
-  location            = var.location
+resource "azurerm_virtual_network" "this" {
   name                = module.naming.virtual_network.name
+  location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  subnets = {
-    database = {
-      name              = module.naming.subnet.name_unique
-      address_prefixes  = [cidrsubnet(local.vnet_cidr, 8, 1)]
-      service_endpoints = ["Microsoft.Storage"]
-      delegation = [{
-        name = "fs"
-        service_delegation = {
-          name    = "Microsoft.DBforMySQL/flexibleServers"
-          actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-        }
-      }]
-    }
-    backend = {
-      name             = module.naming.subnet.name_unique
-      address_prefixes = [cidrsubnet(local.vnet_cidr, 8, 2)]
-      delegation = [{
-        name = "webapp"
-        service_delegation = {
-          name    = "Microsoft.Web/serverFarms"
-          actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-        }
-      }]
-    }
-  }
-
-  tags = {
-    Environment = terraform.workspace
-    Service     = local.project_name
-  }
+  address_space       = [local.vnet_cidr]
 }
 
 module "database" {
@@ -67,8 +35,9 @@ module "database" {
   extra_naming_suffix = local.extra_naming_suffix
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  vnet_id             = module.network.resource_id
-  snet_id             = module.network.subnets["database"].resource_id
+  vnet_id             = azurerm_virtual_network.this.id
+  vnet_name           = azurerm_virtual_network.this.name
+  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 1)
   sku                 = var.database_sku
   db_version          = var.database_version
   admin_username      = module.vault.secrets["database-admin-username"]
@@ -81,7 +50,8 @@ module "backend" {
   extra_naming_suffix = local.extra_naming_suffix
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  snet_id             = module.network.subnets["backend"].resource_id
+  vnet_name           = azurerm_virtual_network.this.name
+  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 2)
   sku                 = var.backend_sku
   worker_count        = var.backend_worker_count
   docker_registry_url = var.backend_docker_registry_url

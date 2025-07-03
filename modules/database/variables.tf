@@ -24,8 +24,13 @@ variable "vnet_id" {
   type        = string
 }
 
-variable "snet_id" {
-  description = "Virtual Network Integration Subnet ID"
+variable "vnet_name" {
+  description = "Virtual Network Name"
+  type        = string
+}
+
+variable "snet_address_prefix" {
+  description = "Subnet Address Prefix"
   type        = string
 }
 
