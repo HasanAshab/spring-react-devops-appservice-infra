@@ -5,7 +5,7 @@ module "naming" {
 }
 
 resource "azurerm_mysql_flexible_server" "this" {
-  name                         = module.naming.mysql_flexible_server.name
+  name                         = module.naming.mysql_server.name
   location                     = var.location
   resource_group_name          = var.resource_group_name
   administrator_login          = var.admin_username

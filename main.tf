@@ -1,3 +1,13 @@
+module "vault" {
+  source              = "./modules/vault"
+  name                = local.vault_name
+  resource_group_name = local.vault_resource_group
+  secrets = [
+    "database-admin-username",
+    "database-admin-password",
+  ]
+}
+
 module "naming" {
   source  = "Azure/naming/azurerm"
   version = "0.4.2"
@@ -25,28 +35,24 @@ module "network" {
       name              = module.naming.subnet.name_unique
       address_prefixes  = [cidrsubnet(local.vnet_cidr, 8, 1)]
       service_endpoints = ["Microsoft.Storage"]
-      delegations = [
-        {
-          name = "fs"
-          service_delegation = {
-            name    = "Microsoft.DBforMySQL/flexibleServers"
-            actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-          }
+      delegation = [{
+        name = "fs"
+        service_delegation = {
+          name    = "Microsoft.DBforMySQL/flexibleServers"
+          actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
         }
-      ]
+      }]
     }
     backend = {
       name             = module.naming.subnet.name_unique
       address_prefixes = [cidrsubnet(local.vnet_cidr, 8, 2)]
-      delegations = [
-        {
-          name = "webapp"
-          service_delegation = {
-            name    = "Microsoft.Web/serverFarms"
-            actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-          }
+      delegation = [{
+        name = "webapp"
+        service_delegation = {
+          name    = "Microsoft.Web/serverFarms"
+          actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
         }
-      ]
+      }]
     }
   }
 
@@ -58,56 +64,52 @@ module "network" {
 
 module "dns_db" {
   source              = "./modules/dns"
-  name                = module.naming.private_dns_zone.name
+  name                = local.db_dns_zone_name
   resource_group_name = azurerm_resource_group.this.name
   vnet_id             = module.network.resource_id
 }
 
-output "dns_name" {
-  value = module.naming.private_dns_zone.name
+module "database" {
+  source              = "./modules/database"
+  extra_naming_suffix = local.extra_naming_suffix
+  location            = var.location
+  resource_group_name = azurerm_resource_group.this.name
+  snet_id             = module.network.subnets["database"].resource_id
+  private_dns_zone_id = module.dns_db.zone_id
+  sku                 = var.database_sku
+  db_version          = var.database_version
+  admin_username      = module.vault.secrets["database-admin-username"]
+  admin_password      = module.vault.secrets["database-admin-password"]
+  db_name             = var.database_name
 }
 
-# module "database" {
-#   source              = "./modules/database"
-#   extra_naming_suffix = local.extra_naming_suffix
-#   location            = var.location
-#   resource_group_name = azurerm_resource_group.this.name
-#   snet_id             = module.network.subnets["database"].id
-#   private_dns_zone_id = module.dns_db.zone_id
-#   sku                 = var.database_sku
-#   db_version          = var.database_version
-#   admin_username      = local.database_admin_username
-#   admin_password      = local.database_admin_password
-#   db_name             = var.database_name
-# }
+module "backend" {
+  source              = "./modules/backend"
+  extra_naming_suffix = local.extra_naming_suffix
+  location            = var.location
+  resource_group_name = azurerm_resource_group.this.name
+  snet_id             = module.network.subnets["backend"].resource_id
+  sku                 = var.backend_sku
+  worker_count        = var.backend_worker_count
+  docker_registry_url = var.backend_docker_registry_url
+  docker_image_name   = var.backend_docker_image_name
+  docker_image_tag    = var.backend_docker_image_tag
+  app_settings = {
+    "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
+    "SPRING_DATASOURCE_USERNAME" = module.vault.secrets["database-admin-username"]
+    "SPRING_DATASOURCE_PASSWORD" = module.vault.secrets["database-admin-password"]
+    "SERVER_PORT"                = var.backend_port
+  }
+}
 
-# module "backend" {
-#   source              = "./modules/backend"
-#   extra_naming_suffix = local.extra_naming_suffix
-#   location            = var.location
-#   resource_group_name = azurerm_resource_group.this.name
-#   snet_id             = module.network.subnets["backend"].id
-#   sku                 = var.backend_sku
-#   worker_count        = var.backend_worker_count
-#   docker_registry_url = var.backend_docker_registry_url
-#   docker_image_name   = var.backend_docker_image_name
-#   docker_image_tag    = var.backend_docker_image_tag
-#   app_settings = {
-#     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
-#     "SPRING_DATASOURCE_USERNAME" = local.database_admin_username
-#     "SPRING_DATASOURCE_PASSWORD" = local.database_admin_password
-#     "SERVER_PORT"                = var.backend_port
-#   }
-# }
-
-# module "frontend" {
-#   source              = "./modules/frontend"
-#   extra_naming_suffix = local.extra_naming_suffix
-#   location            = var.location
-#   resource_group_name = azurerm_resource_group.this.name
-#   sku                 = var.frontend_sku
-#   worker_count        = var.frontend_worker_count
-#   docker_registry_url = var.frontend_docker_registry_url
-#   docker_image_name   = var.frontend_docker_image_name
-#   docker_image_tag    = var.frontend_docker_image_tag
-# }
+module "frontend" {
+  source              = "./modules/frontend"
+  extra_naming_suffix = local.extra_naming_suffix
+  location            = var.location
+  resource_group_name = azurerm_resource_group.this.name
+  sku                 = var.frontend_sku
+  worker_count        = var.frontend_worker_count
+  docker_registry_url = var.frontend_docker_registry_url
+  docker_image_name   = var.frontend_docker_image_name
+  docker_image_tag    = var.frontend_docker_image_tag
+}
