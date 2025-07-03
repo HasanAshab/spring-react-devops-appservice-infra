@@ -19,13 +19,13 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "snet_id" {
-  description = "Virtual Network Integration Subnet ID"
+variable "vnet_id" {
+  description = "Virtual Network ID"
   type        = string
 }
 
-variable "private_dns_zone_id" {
-  description = "Private DNS Zone ID"
+variable "snet_id" {
+  description = "Virtual Network Integration Subnet ID"
   type        = string
 }
 

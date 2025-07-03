@@ -4,6 +4,18 @@ module "naming" {
   suffix  = concat(local.naming_suffix, var.extra_naming_suffix)
 }
 
+resource "azurerm_private_dns_zone" "this" {
+  name                = local.dns_zone_name
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "this" {
+  name                  = "dns-link"
+  resource_group_name   = var.resource_group_name
+  virtual_network_id    = var.vnet_id
+  private_dns_zone_name = azurerm_private_dns_zone.this.name
+}
+
 resource "azurerm_mysql_flexible_server" "this" {
   name                         = module.naming.mysql_server.name
   location                     = var.location
@@ -14,7 +26,7 @@ resource "azurerm_mysql_flexible_server" "this" {
   version                      = var.db_version
   geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
   backup_retention_days        = var.backup_retention_days
-  private_dns_zone_id          = var.private_dns_zone_id
+  private_dns_zone_id          = azurerm_private_dns_zone.this.id
   delegated_subnet_id          = var.snet_id
 
   storage {

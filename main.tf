@@ -62,20 +62,13 @@ module "network" {
   }
 }
 
-module "dns_db" {
-  source              = "./modules/dns"
-  name                = local.db_dns_zone_name
-  resource_group_name = azurerm_resource_group.this.name
-  vnet_id             = module.network.resource_id
-}
-
 module "database" {
   source              = "./modules/database"
   extra_naming_suffix = local.extra_naming_suffix
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
+  vnet_id             = module.network.resource_id
   snet_id             = module.network.subnets["database"].resource_id
-  private_dns_zone_id = module.dns_db.zone_id
   sku                 = var.database_sku
   db_version          = var.database_version
   admin_username      = module.vault.secrets["database-admin-username"]
