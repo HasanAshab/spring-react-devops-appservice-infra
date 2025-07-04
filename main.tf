@@ -1,5 +1,5 @@
-module "vault" {
-  source              = "./modules/vault"
+module "vault_reader" {
+  source              = "./modules/vault_reader"
   name                = local.vault_name
   resource_group_name = local.vault_resource_group
   secrets = [
@@ -40,8 +40,8 @@ module "database" {
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 1)
   sku                 = var.database_sku
   db_version          = var.database_version
-  admin_username      = module.vault.secrets["database-admin-username"]
-  admin_password      = module.vault.secrets["database-admin-password"]
+  admin_username      = module.vault_reader.secrets["database-admin-username"]
+  admin_password      = module.vault_reader.secrets["database-admin-password"]
   db_name             = var.database_name
 }
 
@@ -59,8 +59,8 @@ module "backend" {
   docker_image_tag    = var.backend_docker_image_tag
   app_settings = {
     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
-    "SPRING_DATASOURCE_USERNAME" = module.vault.secrets["database-admin-username"]
-    "SPRING_DATASOURCE_PASSWORD" = module.vault.secrets["database-admin-password"]
+    "SPRING_DATASOURCE_USERNAME" = module.vault_reader.secrets["database-admin-username"]
+    "SPRING_DATASOURCE_PASSWORD" = module.vault_reader.secrets["database-admin-password"]
     "SERVER_PORT"                = var.backend_port
   }
 }
