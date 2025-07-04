@@ -1,13 +1,3 @@
-module "vault_reader" {
-  source              = "./modules/vault_reader"
-  name                = local.vault_name
-  resource_group_name = local.vault_resource_group
-  secrets = [
-    "database-admin-username",
-    "database-admin-password",
-  ]
-}
-
 module "naming" {
   source  = "Azure/naming/azurerm"
   version = "0.4.2"
@@ -17,10 +7,6 @@ module "naming" {
 resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name
   location = var.location
-  tags = {
-    Environment = terraform.workspace
-    Service     = local.project_name
-  }
 }
 
 resource "azurerm_virtual_network" "this" {
@@ -28,6 +14,38 @@ resource "azurerm_virtual_network" "this" {
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
   address_space       = [local.vnet_cidr]
+}
+
+data "azurerm_client_config" "current" {}
+
+ephemeral "random_password" "username" {
+  length           = 16
+  special          = false
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+ephemeral "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+module "vault" {
+  source              = "./modules/vault"
+  name                = module.vault.name
+  resource_group_name = azurerm_resource_group.this.name
+  secrets = [
+    {
+      name             = "database-admin-username"
+      value_wo         = ephemeral.random_password.username.value
+      value_wo_version = 1
+    },
+    {
+      name             = "database-admin-password"
+      value            = ephemeral.random_password.password.value
+      value_wo_version = 1
+    }
+  ]
 }
 
 module "database" {
@@ -40,8 +58,8 @@ module "database" {
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 1)
   sku                 = var.database_sku
   db_version          = var.database_version
-  admin_username      = module.vault_reader.secrets["database-admin-username"]
-  admin_password      = module.vault_reader.secrets["database-admin-password"]
+  admin_username      = module.vault.secrets["database-admin-username"]
+  admin_password      = module.vault.secrets["database-admin-password"]
   db_name             = var.database_name
 }
 
@@ -59,8 +77,8 @@ module "backend" {
   docker_image_tag    = var.backend_docker_image_tag
   app_settings = {
     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
-    "SPRING_DATASOURCE_USERNAME" = module.vault_reader.secrets["database-admin-username"]
-    "SPRING_DATASOURCE_PASSWORD" = module.vault_reader.secrets["database-admin-password"]
+    "SPRING_DATASOURCE_USERNAME" = module.vault.secrets["database-admin-username"]
+    "SPRING_DATASOURCE_PASSWORD" = module.vault.secrets["database-admin-password"]
     "SERVER_PORT"                = var.backend_port
   }
 }
