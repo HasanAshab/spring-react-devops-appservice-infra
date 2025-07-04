@@ -54,10 +54,15 @@ variable "admin_username" {
   type        = string
 }
 
-variable "admin_password" {
-  description = "Password for MySQL Server"
+variable "admin_password_wo" {
+  description = "Password for MySQL Server (Write Only)"
   type        = string
   sensitive   = true
+}
+
+variable "admin_password_wo_version" {
+  description = "Write Only Password Version"
+  type        = number
 }
 
 variable "geo_redundant_backup_enabled" {

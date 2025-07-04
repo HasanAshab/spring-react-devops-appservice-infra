@@ -1,9 +1,10 @@
 location = "centralus"
 
 # database
-database_sku     = "B_Standard_B1ms"
-database_version = "8.0.21"
-database_name    = "db1"
+database_sku            = "B_Standard_B1ms"
+database_version        = "8.0.21"
+database_name           = "db1"
+database_admin_username = "admin4321"
 
 # backend
 backend_sku                 = "B1"

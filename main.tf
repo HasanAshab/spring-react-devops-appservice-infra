@@ -16,15 +16,8 @@ resource "azurerm_virtual_network" "this" {
   address_space       = [local.vnet_cidr]
 }
 
-data "azurerm_client_config" "current" {}
 
-ephemeral "random_password" "username" {
-  length           = 16
-  special          = false
-  override_special = "!#$%&*()-_=+[]{}<>:?"
-}
-
-ephemeral "random_password" "password" {
+ephemeral "random_password" "db" {
   length           = 16
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
@@ -33,34 +26,31 @@ ephemeral "random_password" "password" {
 module "vault" {
   source              = "./modules/vault"
   name                = module.vault.name
+  location            = var.location
   resource_group_name = azurerm_resource_group.this.name
   secrets = [
     {
-      name             = "database-admin-username"
-      value_wo         = ephemeral.random_password.username.value
-      value_wo_version = 1
-    },
-    {
       name             = "database-admin-password"
-      value            = ephemeral.random_password.password.value
-      value_wo_version = 1
+      value            = ephemeral.random_password.db.value
+      value_wo_version = local.db_password_version
     }
   ]
 }
 
 module "database" {
-  source              = "./modules/database"
-  extra_naming_suffix = local.extra_naming_suffix
-  location            = var.location
-  resource_group_name = azurerm_resource_group.this.name
-  vnet_id             = azurerm_virtual_network.this.id
-  vnet_name           = azurerm_virtual_network.this.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 1)
-  sku                 = var.database_sku
-  db_version          = var.database_version
-  admin_username      = module.vault.secrets["database-admin-username"]
-  admin_password      = module.vault.secrets["database-admin-password"]
-  db_name             = var.database_name
+  source                    = "./modules/database"
+  extra_naming_suffix       = local.extra_naming_suffix
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.this.name
+  vnet_id                   = azurerm_virtual_network.this.id
+  vnet_name                 = azurerm_virtual_network.this.name
+  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 8, 1)
+  sku                       = var.database_sku
+  db_version                = var.database_version
+  admin_username            = var.database_admin_username
+  admin_password_wo         = module.vault.secrets["database-admin-password"]
+  admin_password_wo_version = local.db_password_version
+  db_name                   = var.database_name
 }
 
 module "backend" {
@@ -77,7 +67,7 @@ module "backend" {
   docker_image_tag    = var.backend_docker_image_tag
   app_settings = {
     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
-    "SPRING_DATASOURCE_USERNAME" = module.vault.secrets["database-admin-username"]
+    "SPRING_DATASOURCE_USERNAME" = var.database_admin_username
     "SPRING_DATASOURCE_PASSWORD" = module.vault.secrets["database-admin-password"]
     "SERVER_PORT"                = var.backend_port
   }

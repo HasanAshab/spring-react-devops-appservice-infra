@@ -24,6 +24,11 @@ variable "database_name" {
   type        = string
 }
 
+variable "database_admin_username" {
+  description = "Database Admin Username"
+  type        = string
+}
+
 # Backend
 variable "backend_sku" {
   description = "SKU of VM-Scale Set"

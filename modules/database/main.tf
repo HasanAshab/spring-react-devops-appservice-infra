@@ -32,17 +32,18 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_mysql_flexible_server" "this" {
-  name                         = module.naming.mysql_server.name
-  location                     = var.location
-  resource_group_name          = var.resource_group_name
-  administrator_login          = var.admin_username
-  administrator_password       = var.admin_password
-  sku_name                     = var.sku
-  version                      = var.db_version
-  geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
-  backup_retention_days        = var.backup_retention_days
-  private_dns_zone_id          = azurerm_private_dns_zone.this.id
-  delegated_subnet_id          = azurerm_subnet.this.id
+  name                              = module.naming.mysql_server.name
+  location                          = var.location
+  resource_group_name               = var.resource_group_name
+  administrator_login               = var.admin_username
+  administrator_password_wo         = var.admin_password_wo
+  administrator_password_wo_version = var.admin_password_wo_version
+  sku_name                          = var.sku
+  version                           = var.db_version
+  geo_redundant_backup_enabled      = var.geo_redundant_backup_enabled
+  backup_retention_days             = var.backup_retention_days
+  private_dns_zone_id               = azurerm_private_dns_zone.this.id
+  delegated_subnet_id               = azurerm_subnet.this.id
 
   storage {
     size_gb            = var.storage_size_gb
