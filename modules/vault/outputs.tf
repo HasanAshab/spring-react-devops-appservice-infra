@@ -1,8 +1,6 @@
 output "secrets" {
   description = "Retrieved Secrets"
-  value = {
-    for name, secret in azurerm_key_vault_secret.all :
-    name => secret.value
-  }
-  sensitive = true
+  value       = ephemeral.azurerm_key_vault_secret.all
+  sensitive   = true
+  ephemeral   = true
 }

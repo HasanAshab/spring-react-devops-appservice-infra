@@ -51,7 +51,7 @@ module "database" {
   sku                       = var.database_sku
   db_version                = var.database_version
   admin_username            = var.database_admin_username
-  admin_password_wo         = module.vault.secrets["database-admin-password"]
+  admin_password_wo         = module.vault.secrets["db_pass"].value
   admin_password_wo_version = local.db_password_version
   db_name                   = var.database_name
 }
@@ -71,7 +71,7 @@ module "backend" {
   app_settings = {
     "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
     "SPRING_DATASOURCE_USERNAME" = var.database_admin_username
-    "SPRING_DATASOURCE_PASSWORD" = module.vault.secrets["database-admin-password"]
+    "SPRING_DATASOURCE_PASSWORD" = module.vault.secrets["db_pass"].value # todo
     "SERVER_PORT"                = var.backend_port
   }
 }

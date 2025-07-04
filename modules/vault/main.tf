@@ -27,7 +27,7 @@ resource "azurerm_key_vault" "this" {
   }
 }
 
-resource "azurerm_key_vault_secret" "all" {
+resource "azurerm_key_vault_secret" "this" {
   for_each         = var.secrets
   key_vault_id     = azurerm_key_vault.this.id
   name             = each.value.name
@@ -35,8 +35,8 @@ resource "azurerm_key_vault_secret" "all" {
   value_wo_version = each.value.version
 }
 
-# ephemeral "azurerm_key_vault_secret" "all" {
-#   for_each     = var.secrets
-#   name         = each.value.name
-#   key_vault_id = azurerm_key_vault.this.id
-# }
+ephemeral "azurerm_key_vault_secret" "all" {
+  for_each     = azurerm_key_vault_secret.this
+  name         = each.value.name
+  key_vault_id = azurerm_key_vault.this.id
+}
