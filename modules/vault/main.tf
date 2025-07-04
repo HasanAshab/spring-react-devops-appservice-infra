@@ -1,30 +1,20 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "this" {
-  name                       = var.name
-  location                   = var.location
-  resource_group_name        = var.resource_group_name
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  sku_name                   = var.sku
-  soft_delete_retention_days = var.soft_delete_retention_days
+  name                          = var.name
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  tenant_id                     = data.azurerm_client_config.current.tenant_id
+  sku_name                      = var.sku
+  soft_delete_retention_days    = var.soft_delete_retention_days
+  enable_rbac_authorization     = true
+  public_network_access_enabled = true
+}
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    key_permissions = [
-      "Get",
-    ]
-
-    secret_permissions = [
-      "Get",
-      "Delete",
-      "List",
-      "Purge",
-      "Recover",
-      "Set",
-    ]
-  }
+resource "azurerm_role_assignment" "secrets_officer" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_key_vault_secret" "this" {
