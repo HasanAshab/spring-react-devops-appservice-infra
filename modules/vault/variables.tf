@@ -6,11 +6,6 @@ variable "name" {
 variable "location" {
   description = "Location of all resources"
   type        = string
-
-  validation {
-    condition     = length(regexall(" ", var.location)) == 0
-    error_message = "Location must not contain spaces"
-  }
 }
 
 variable "resource_group_name" {
@@ -18,16 +13,29 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "secrets" {
-  description = "Secret Names"
-  type = set(object({
-    name             = string
-    value_wo         = string
-    value_wo_version = number
-  }))
+variable "sku" {
+  description = "SKU of Key Vault"
+  type        = string
+}
 
-  validation {
-    condition     = length(var.secrets) > 0
-    error_message = "You must provide at least one secret."
-  }
+variable "soft_delete_retention_days" {
+  description = "Soft Delete Retention Days"
+  type        = number
+  nullable    = true
+  default     = null
+}
+
+variable "secrets" {
+  description = "Secret Details"
+  type = map(object({
+    name    = string
+    version = string
+  }))
+}
+
+variable "secrets_value" {
+  description = "Secret Values"
+  type        = map(string)
+  sensitive   = true
+  ephemeral   = true
 }

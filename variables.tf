@@ -8,6 +8,12 @@ variable "location" {
   }
 }
 
+# Vault
+variable "vault_sku" {
+  description = "SKU of Key Vault"
+  type        = string
+}
+
 # Database
 variable "database_sku" {
   description = "SKU of MySQL Server"

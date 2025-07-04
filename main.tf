@@ -25,16 +25,19 @@ ephemeral "random_password" "db" {
 
 module "vault" {
   source              = "./modules/vault"
-  name                = module.vault.name
+  name                = module.naming.key_vault.name
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
-  secrets = [
-    {
-      name             = "database-admin-password"
-      value            = ephemeral.random_password.db.value
-      value_wo_version = local.db_password_version
+  sku                 = var.vault_sku
+  secrets = {
+    db_pass = {
+      name    = "database-admin-password"
+      version = local.db_password_version
     }
-  ]
+  }
+  secrets_value = {
+    db_pass = ephemeral.random_password.db.result
+  }
 }
 
 module "database" {

@@ -1,5 +1,8 @@
 location = "centralus"
 
+# vault
+vault_sku = "standard"
+
 # database
 database_sku            = "B_Standard_B1ms"
 database_version        = "8.0.21"
