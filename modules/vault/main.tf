@@ -7,13 +7,13 @@ resource "azurerm_key_vault" "this" {
   tenant_id                     = data.azurerm_client_config.current.tenant_id
   sku_name                      = var.sku
   soft_delete_retention_days    = var.soft_delete_retention_days
+  public_network_access_enabled = var.public_network_access_enabled
   enable_rbac_authorization     = true
-  public_network_access_enabled = true
 }
 
-resource "azurerm_role_assignment" "secrets_officer" {
+resource "azurerm_role_assignment" "this" {
   scope                = azurerm_key_vault.this.id
-  role_definition_name = "Key Vault Secrets Officer"
+  role_definition_name = var.role
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
@@ -21,6 +21,7 @@ resource "azurerm_key_vault_secret" "this" {
   for_each         = var.secrets
   key_vault_id     = azurerm_key_vault.this.id
   name             = each.value.name
+  content_type     = each.value.content_type
   value_wo         = var.secrets_value[each.key]
   value_wo_version = each.value.version
 }

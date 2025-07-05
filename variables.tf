@@ -62,8 +62,9 @@ variable "backend_docker_image_tag" {
 }
 
 variable "backend_port" {
-  description = "Port of Application"
-  default     = 80
+  description = "Port of Backend App"
+  type        = string
+  default     = "80"
 }
 
 # Frontend

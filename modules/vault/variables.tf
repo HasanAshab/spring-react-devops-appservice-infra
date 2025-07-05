@@ -25,11 +25,24 @@ variable "soft_delete_retention_days" {
   default     = null
 }
 
+variable "public_network_access_enabled" {
+  description = "Enable Public Network Access"
+  type        = bool
+  default     = true
+}
+
+variable "role" {
+  description = "Role of Key Vault"
+  type        = string
+  default     = "Key Vault Secrets Officer"
+}
+
 variable "secrets" {
   description = "Secret Details"
   type = map(object({
-    name    = string
-    version = string
+    name         = string
+    version      = string
+    content_type = optional(string)
   }))
 }
 
