@@ -58,8 +58,9 @@ module "vault" {
   # }
 }
 
+
 ephemeral "azurerm_key_vault_secret" "db_pass" {
-  name         = module.vault.secrets["db_pass"].name
+  name         = "database-admin-password"
   key_vault_id = module.vault.resource_id
 }
 
