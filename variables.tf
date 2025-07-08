@@ -25,6 +25,11 @@ variable "database_version" {
   type        = string
 }
 
+variable "database_backup_retention_days" {
+  description = "Backup Retention Days"
+  type        = number
+}
+
 variable "database_name" {
   description = "Database Name"
   type        = string
