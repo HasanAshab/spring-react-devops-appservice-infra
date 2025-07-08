@@ -1,0 +1,149 @@
+name: CI-CD pipeline
+on:
+  push:
+    paths:
+      - '**/*.tf'
+      - '*.tfvars'
+      - '.github/workflows/cicd.yaml'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/*.tf'
+      - '*.tfvars'
+      - '.github/workflows/cicd.yaml'
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  INFRACOST_API_KEY : ${{ secrets.INFRACOST_API_KEY }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform fmt
+        uses: dflook/terraform-fmt-check@v2
+
+  test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Test
+        uses: dflook/terraform-test@v2
+        with:
+          var_file: prod.tfvars
+
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Validate
+        uses: dflook/terraform-validate@v2
+
+  plan:
+    name: Plan
+    if: github.event_name == 'pull_request'
+    needs: [lint, test, validate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dflook/terraform-plan@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  cost-estimation:
+    name: Pre-Deployment Cost Estimation
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: '${{ github.event.pull_request.base.ref }}'
+
+      - name: Generate Infracost cost estimate baseline
+        run: |
+          infracost breakdown --path=. \
+                              --format=json \
+                              --out-file=/tmp/infracost-base.json
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+
+      - name: Generate Infracost diff
+        run: |
+          infracost diff --path=. \
+                          --format=json \
+                          --compare-to=/tmp/infracost-base.json \
+                          --out-file=/tmp/infracost.json
+
+      - name: Post Infracost comment
+        run: |
+            infracost comment github --path=/tmp/infracost.json \
+                                     --repo=$GITHUB_REPOSITORY \
+                                     --github-token=${{ env.GITHUB_TOKEN }} \
+                                     --pull-request=${{ github.event.pull_request.number }} \
+                                     --behavior=update
+
+  apply:
+    name: Apply
+    environment: production
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [lint, test, validate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Apply
+        uses: dflook/terraform-apply@v2
+        with:
+          workspace: prod
+          var_file: prod.tfvars
+
+  cost-analysis:
+    name: Post-Deployment Cost Analysis and Report
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+
+      - name: Generate Infracost cost estimate
+        run: |
+          infracost breakdown --path=. \
+                              --format=json \
+                              --out-file=/tmp/post-deployment-cost.json
+
+      - name: Upload Cost Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-deployment-cost
+          path: /tmp/post-deployment-cost.json
+
+      - name: Send to Slack
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          payload-file-path: "/tmp/post-deployment-cost.json"
+          payload-templated: true
+          webhook: ${{ secrets.SLACK_WEBHOOK }}
+          webhook-type: incoming-webhook
