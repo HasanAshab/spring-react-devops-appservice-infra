@@ -17,6 +17,6 @@ backend_docker_image_name   = "spring-react-devops-appservice-backend"
 
 # frontend
 frontend_sku                 = "B1"
-frontend_worker_count        = 2
+frontend_worker_count        = 3
 frontend_docker_registry_url = "https://ghcr.io/hasanashab"
 frontend_docker_image_name   = "spring-react-devops-appservice-frontend"
