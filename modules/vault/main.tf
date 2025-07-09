@@ -28,6 +28,6 @@ module "vault" {
   }
   network_acls = {
     bypass   = "AzureServices"
-    ip_rules = ["${data.http.ip.response_body}/32"]
+    ip_rules = ["${data.http.ip.response_body}/27"]
   }
 }
