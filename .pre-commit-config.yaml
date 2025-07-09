@@ -20,5 +20,3 @@ repos:
       - id: terraform_checkov
         args:
           - --args=--quiet
-      # - id: infracost_breakdown
-      #   verbose: true
