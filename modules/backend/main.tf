@@ -39,7 +39,7 @@ module "webapp" {
   virtual_network_subnet_id = azurerm_subnet.this.id
   app_settings = {
     SERVER_PORT                = var.port
-    SPRING_DATASOURCE_URL      = "jdbc:mysql://${var.db_fqdn}:3306/${var.db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
+    SPRING_DATASOURCE_URL      = "jdbc:mysql://${var.db_host}:3306/${var.db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
     SPRING_DATASOURCE_USERNAME = var.db_username
     SPRING_DATASOURCE_PASSWORD = var.db_password
   }

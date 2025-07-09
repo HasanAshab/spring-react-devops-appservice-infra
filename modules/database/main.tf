@@ -47,11 +47,11 @@ resource "azurerm_mysql_flexible_server" "this" {
   administrator_password_wo_version = var.admin_password_wo_version
   sku_name                          = var.sku
   version                           = var.db_version
-  geo_redundant_backup_enabled      = true
+  geo_redundant_backup_enabled      = local.geo_redundant_backup_enabled
   backup_retention_days             = var.backup_retention_days
+  public_network_access             = local.public_network_access
   private_dns_zone_id               = azurerm_private_dns_zone.this.id
   delegated_subnet_id               = azurerm_subnet.this.id
-  public_network_access             = "Disabled"
 
   storage {
     size_gb            = var.storage_size_gb

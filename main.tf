@@ -93,7 +93,7 @@ module "backend" {
   docker_image_name   = var.backend_docker_image_name
   docker_image_tag    = var.backend_docker_image_tag
   port                = var.backend_port
-  db_fqdn             = module.database.fqdn
+  db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
   db_password         = "temp" # ephemeral.azurerm_key_vault_secret.db_pass.value
