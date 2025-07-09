@@ -73,7 +73,7 @@ jobs:
           output_file_path: console,results.sarif
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: results.sarif
@@ -132,7 +132,7 @@ jobs:
     name: Apply
     environment: production
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [lint, test, validate]
+    needs: [lint, test, validate, scan]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
