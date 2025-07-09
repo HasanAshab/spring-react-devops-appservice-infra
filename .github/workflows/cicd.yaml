@@ -55,7 +55,8 @@ jobs:
       run: tflint --init
 
     - name: Run TFLint
-      run: tflint --config .tflint.hcl --recursive
+      run: tflint --config=./.tflint.hcl --recursive
+
 
   test:
     name: Unit Test
