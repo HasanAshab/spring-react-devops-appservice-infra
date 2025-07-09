@@ -5,6 +5,7 @@ module "naming" {
 
 module "asp" {
   source                 = "git::https://github.com/Azure/terraform-azurerm-avm-res-web-serverfarm.git?ref=8ca49e2" # v0.7.0
+  enable_telemetry       = var.enable_telemetry
   name                   = module.naming.app_service_plan.name
   resource_group_name    = var.resource_group_name
   location               = var.location
@@ -32,6 +33,7 @@ module "webapp" {
   source                    = "git::https://github.com/Azure/terraform-azurerm-avm-res-web-site.git?ref=5388703" # v0.17.2
   kind                      = "webapp"
   os_type                   = local.os_type
+  enable_telemetry          = var.enable_telemetry
   name                      = module.naming.app_service.name
   resource_group_name       = var.resource_group_name
   location                  = var.location

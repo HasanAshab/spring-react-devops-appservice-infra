@@ -8,6 +8,12 @@ variable "location" {
   }
 }
 
+variable "enable_telemetry" {
+  description = "Enable Telemetry for all modules"
+  type        = bool
+  default     = true
+}
+
 # Vault
 variable "vault_sku" {
   description = "SKU of Key Vault"

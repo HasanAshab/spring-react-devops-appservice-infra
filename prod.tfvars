@@ -1,4 +1,5 @@
-location = "centralus"
+location         = "centralus"
+enable_telemetry = true
 
 # vault
 vault_sku = "standard"
@@ -6,8 +7,8 @@ vault_sku = "standard"
 # database
 database_sku                   = "B_Standard_B1ms"
 database_version               = "8.0.21"
-database_backup_retention_days = 3
-database_name                  = "db1"
+database_backup_retention_days = 7
+database_name                  = "db-prod"
 database_admin_username        = "admin4321"
 
 # backend

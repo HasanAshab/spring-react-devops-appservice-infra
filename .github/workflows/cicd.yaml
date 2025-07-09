@@ -21,6 +21,8 @@ env:
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   INFRACOST_API_KEY : ${{ secrets.INFRACOST_API_KEY }}
+  WORKSPACE_NAME: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
+  TFVARS_FILE: ${{ github.ref_name == 'main' && 'prod.tfvars' || format('{0}.tfvars', github.ref_name) }}
 
 permissions:
   contents: read
@@ -45,7 +47,7 @@ jobs:
       - name: Terraform Test
         uses: dflook/terraform-test@v2
         with:
-          var_file: prod.tfvars
+          var_file: ${{ env.TFVARS_FILE }}
 
   validate:
     name: Validate
@@ -66,8 +68,8 @@ jobs:
 
       - uses: dflook/terraform-plan@v2
         with:
-          workspace: prod
-          var_file: prod.tfvars
+          workspace: ${{ env.WORKSPACE_NAME }}
+          var_file: ${{ env.TFVARS_FILE }}
 
   cost-estimation:
     name: Pre-Deployment Cost Estimation
@@ -118,8 +120,8 @@ jobs:
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
         with:
-          workspace: prod
-          var_file: prod.tfvars
+          workspace: ${{ env.WORKSPACE_NAME }}
+          var_file: ${{ env.TFVARS_FILE }}
 
   cost-analysis:
     name: Post-Deployment Cost Analysis and Report

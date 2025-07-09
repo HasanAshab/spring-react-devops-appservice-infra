@@ -3,6 +3,11 @@ module "naming" {
   suffix = concat(local.naming_suffix, var.extra_naming_suffix)
 }
 
+module "naming_pe" {
+  source = "git::https://github.com/Azure/terraform-azurerm-naming.git?ref=75d5afa" # v0.4.2
+  suffix = concat(local.pe_naming_suffix, var.extra_naming_suffix)
+}
+
 resource "azurerm_private_dns_zone" "this" {
   name                = local.dns_zone_name
   resource_group_name = var.resource_group_name
@@ -32,7 +37,7 @@ resource "azurerm_subnet" "this" {
 }
 
 resource "azurerm_subnet" "pe" {
-  name                 = module.naming.subnet.name_unique
+  name                 = module.naming_pe.subnet.name_unique
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = [var.pe_snet_address_prefix]
@@ -64,7 +69,7 @@ resource "azurerm_mysql_flexible_server" "this" {
 }
 
 resource "azurerm_private_endpoint" "default" {
-  name                = "private-endpoint-mysql"
+  name                = module.naming_pe.private_endpoint.name
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = azurerm_subnet.pe.id

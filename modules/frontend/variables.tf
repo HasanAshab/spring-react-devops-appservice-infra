@@ -4,6 +4,12 @@ variable "extra_naming_suffix" {
   default     = []
 }
 
+variable "enable_telemetry" {
+  description = "Enable Telemetry for this module"
+  type        = bool
+  default     = true
+}
+
 variable "location" {
   description = "Location of all resources"
   type        = string

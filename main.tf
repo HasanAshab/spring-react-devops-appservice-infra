@@ -21,18 +21,13 @@ resource "random_password" "db" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-data "azurerm_client_config" "current" {}
-
-
 module "vault" {
-  source                        = "git::https://github.com/Azure/terraform-azurerm-avm-res-keyvault-vault.git?ref=2dd068b"
-  name                          = module.naming.key_vault.name_unique
-  location                      = azurerm_resource_group.this.location
-  resource_group_name           = azurerm_resource_group.this.name
-  sku_name                      = var.vault_sku
-  tenant_id                     = data.azurerm_client_config.current.tenant_id
-  enable_telemetry              = false
-  public_network_access_enabled = true
+  source              = "./modules/vault"
+  enable_telemetry    = var.enable_telemetry
+  name                = module.naming.key_vault.name
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  sku                 = var.vault_sku
   secrets = {
     db_pass = {
       name = "database-admin-password"
@@ -41,26 +36,14 @@ module "vault" {
   secrets_value = {
     db_pass = resource.random_password.db.result
   }
-  role_assignments = {
-    deployment_user_kv_admin = {
-      role_definition_id_or_name = "Key Vault Administrator"
-      principal_id               = data.azurerm_client_config.current.object_id
-    }
-  }
-  wait_for_rbac_before_secret_operations = {
-    create = "60s"
-  }
-  # network_acls = {
-  #   bypass   = "AzureServices"
-  #   ip_rules = ["${data.http.ip.response_body}/32"]
-  # }
+  role = "Key Vault Administrator"
 }
 
 
-ephemeral "azurerm_key_vault_secret" "db_pass" {
-  name         = "database-admin-password"
-  key_vault_id = module.vault.resource_id
-}
+# ephemeral "azurerm_key_vault_secret" "db_pass" {
+#   name         = "database-admin-password"
+#   key_vault_id = module.vault.resource_id
+# }
 
 module "database" {
   source                    = "./modules/database"
@@ -75,7 +58,7 @@ module "database" {
   db_version                = var.database_version
   backup_retention_days     = var.database_backup_retention_days
   admin_username            = var.database_admin_username
-  admin_password_wo         = ephemeral.azurerm_key_vault_secret.db_pass.value
+  admin_password_wo         = "Passr@sadad.1213" # ephemeral.azurerm_key_vault_secret.db_pass.value
   admin_password_wo_version = local.db_password_version
   db_name                   = var.database_name
 }
@@ -83,6 +66,7 @@ module "database" {
 module "backend" {
   source              = "./modules/backend"
   extra_naming_suffix = local.extra_naming_suffix
+  enable_telemetry    = var.enable_telemetry
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   vnet_name           = azurerm_virtual_network.this.name
@@ -96,12 +80,13 @@ module "backend" {
   db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
-  db_password         = "temp" # ephemeral.azurerm_key_vault_secret.db_pass.value
+  db_password         = "Passr@sadad.1213" # ephemeral.azurerm_key_vault_secret.db_pass.value
 }
 
 module "frontend" {
   source              = "./modules/frontend"
   extra_naming_suffix = local.extra_naming_suffix
+  enable_telemetry    = var.enable_telemetry
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   sku                 = var.frontend_sku
