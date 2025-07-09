@@ -23,7 +23,6 @@ module "webapp" {
   location                 = var.location
   service_plan_resource_id = module.asp.resource_id
   app_settings             = var.app_settings
-  # virtual_network_subnet_id = var.snet_id
   site_config = {
     vnet_route_all_enabled = true
     application_stack = {

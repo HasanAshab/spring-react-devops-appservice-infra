@@ -63,20 +63,20 @@ ephemeral "azurerm_key_vault_secret" "db_pass" {
 }
 
 module "database" {
-  source                       = "./modules/database"
-  extra_naming_suffix          = local.extra_naming_suffix
-  location                     = azurerm_resource_group.this.location
-  resource_group_name          = azurerm_resource_group.this.name
-  vnet_id                      = azurerm_virtual_network.this.id
-  vnet_name                    = azurerm_virtual_network.this.name
-  snet_address_prefix          = cidrsubnet(local.vnet_cidr, 8, 1)
-  sku                          = var.database_sku
-  db_version                   = var.database_version
-  backup_retention_days        = var.database_backup_retention_days
-  admin_username               = var.database_admin_username
-  admin_password_wo            = ephemeral.azurerm_key_vault_secret.db_pass.value
-  admin_password_wo_version    = local.db_password_version
-  db_name                      = var.database_name
+  source                    = "./modules/database"
+  extra_naming_suffix       = local.extra_naming_suffix
+  location                  = azurerm_resource_group.this.location
+  resource_group_name       = azurerm_resource_group.this.name
+  vnet_id                   = azurerm_virtual_network.this.id
+  vnet_name                 = azurerm_virtual_network.this.name
+  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 8, 1)
+  sku                       = var.database_sku
+  db_version                = var.database_version
+  backup_retention_days     = var.database_backup_retention_days
+  admin_username            = var.database_admin_username
+  admin_password_wo         = ephemeral.azurerm_key_vault_secret.db_pass.value
+  admin_password_wo_version = local.db_password_version
+  db_name                   = var.database_name
 }
 
 module "backend" {

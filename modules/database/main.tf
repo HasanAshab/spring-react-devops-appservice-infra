@@ -8,6 +8,7 @@ resource "azurerm_private_dns_zone" "this" {
   resource_group_name = var.resource_group_name
 }
 
+
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
   name                  = "dns-link"
   resource_group_name   = var.resource_group_name
@@ -77,7 +78,7 @@ resource "azurerm_private_endpoint" "default" {
 
   private_dns_zone_group {
     name                 = "dns-zone-group1"
-    private_dns_zone_ids = [azurerm_private_dns_zone.default.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.this.id]
   }
 }
 
