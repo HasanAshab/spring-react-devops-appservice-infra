@@ -26,7 +26,6 @@ env:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   lint:
@@ -58,10 +57,31 @@ jobs:
       - name: Terraform Validate
         uses: dflook/terraform-validate@v2
 
+  scan:
+    name: Security Scan
+    permissions:
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
+
   plan:
     name: Plan
     if: github.event_name == 'pull_request'
-    needs: [lint, test, validate]
+    needs: [lint, test, validate, scan]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
