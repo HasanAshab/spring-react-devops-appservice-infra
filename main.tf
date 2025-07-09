@@ -53,7 +53,6 @@ module "database" {
   vnet_id                   = azurerm_virtual_network.this.id
   vnet_name                 = azurerm_virtual_network.this.name
   snet_address_prefix       = cidrsubnet(local.vnet_cidr, 10, 0)
-  pe_snet_address_prefix    = cidrsubnet(local.vnet_cidr, 10, 1)
   sku                       = var.database_sku
   db_version                = var.database_version
   backup_retention_days     = var.database_backup_retention_days
@@ -70,7 +69,7 @@ module "backend" {
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   vnet_name           = azurerm_virtual_network.this.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 2)
+  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 1)
   sku                 = var.backend_sku
   worker_count        = var.backend_worker_count
   docker_registry_url = var.backend_docker_registry_url

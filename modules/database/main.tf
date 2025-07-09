@@ -3,16 +3,10 @@ module "naming" {
   suffix = concat(local.naming_suffix, var.extra_naming_suffix)
 }
 
-module "naming_pe" {
-  source = "git::https://github.com/Azure/terraform-azurerm-naming.git?ref=75d5afa" # v0.4.2
-  suffix = concat(local.pe_naming_suffix, var.extra_naming_suffix)
-}
-
 resource "azurerm_private_dns_zone" "this" {
   name                = local.dns_zone_name
   resource_group_name = var.resource_group_name
 }
-
 
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
   name                  = "dns-link"
@@ -21,26 +15,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "this" {
   private_dns_zone_name = azurerm_private_dns_zone.this.name
 }
 
+
 resource "azurerm_subnet" "this" {
   name                 = module.naming.subnet.name_unique
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
   address_prefixes     = [var.snet_address_prefix]
-  service_endpoints    = ["Microsoft.Storage"]
-  delegation {
-    name = "fs"
-    service_delegation {
-      name    = "Microsoft.DBforMySQL/flexibleServers"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-}
-
-resource "azurerm_subnet" "pe" {
-  name                 = module.naming_pe.subnet.name_unique
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = var.vnet_name
-  address_prefixes     = [var.pe_snet_address_prefix]
 }
 
 resource "azurerm_mysql_flexible_server" "this" {
@@ -56,7 +36,6 @@ resource "azurerm_mysql_flexible_server" "this" {
   backup_retention_days             = var.backup_retention_days
   public_network_access             = local.public_network_access
   private_dns_zone_id               = azurerm_private_dns_zone.this.id
-  delegated_subnet_id               = azurerm_subnet.this.id
 
   storage {
     size_gb            = var.storage_size_gb
@@ -69,10 +48,10 @@ resource "azurerm_mysql_flexible_server" "this" {
 }
 
 resource "azurerm_private_endpoint" "default" {
-  name                = module.naming_pe.private_endpoint.name
+  name                = module.naming.private_endpoint.name
   location            = var.location
   resource_group_name = var.resource_group_name
-  subnet_id           = azurerm_subnet.pe.id
+  subnet_id           = azurerm_subnet.this.id
 
   private_service_connection {
     name                           = "private-serviceconnection1"

@@ -30,11 +30,6 @@ variable "vnet_name" {
 }
 
 variable "snet_address_prefix" {
-  description = "Subnet Address Prefix"
-  type        = string
-}
-
-variable "pe_snet_address_prefix" {
   description = "Subnet Address Prefix of Private Endpoint"
   type        = string
 }
