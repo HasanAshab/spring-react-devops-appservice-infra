@@ -28,7 +28,7 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  format:
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +36,30 @@ jobs:
 
       - name: Terraform fmt
         uses: dflook/terraform-fmt-check@v2
+
+  tflint:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout source code
+
+    - uses: actions/cache@v4
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v4
+
+    - name: Init TFLint
+      run: tflint --init
+
+    - name: Run TFLint
+      run: tflint --config .tflint.hcl --recursive
 
   test:
     name: Unit Test
@@ -66,8 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkov GitHub Action
-        uses: bridgecrewio/checkov-action@v12
+      - uses: bridgecrewio/checkov-action@v12
         with:
           output_format: cli,sarif
           output_file_path: console,results.sarif
