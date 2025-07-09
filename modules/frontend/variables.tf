@@ -29,12 +29,6 @@ variable "worker_count" {
   type        = number
 }
 
-variable "app_settings" {
-  description = "Application Settings"
-  type        = map(string)
-  default     = {}
-}
-
 variable "docker_registry_url" {
   description = "Docker Registry URL"
   type        = string

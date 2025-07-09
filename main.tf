@@ -25,13 +25,13 @@ data "azurerm_client_config" "current" {}
 
 
 module "vault" {
-  source              = "git::https://github.com/Azure/terraform-azurerm-avm-res-keyvault-vault.git?ref=2dd068b"
-  name                = module.naming.key_vault.name_unique
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku_name            = var.vault_sku
-  # enable_telemetry              = var.enable_telemetry
+  source                        = "git::https://github.com/Azure/terraform-azurerm-avm-res-keyvault-vault.git?ref=2dd068b"
+  name                          = module.naming.key_vault.name_unique
+  location                      = azurerm_resource_group.this.location
+  resource_group_name           = azurerm_resource_group.this.name
+  sku_name                      = var.vault_sku
   tenant_id                     = data.azurerm_client_config.current.tenant_id
+  enable_telemetry              = false
   public_network_access_enabled = true
   secrets = {
     db_pass = {
@@ -69,7 +69,8 @@ module "database" {
   resource_group_name       = azurerm_resource_group.this.name
   vnet_id                   = azurerm_virtual_network.this.id
   vnet_name                 = azurerm_virtual_network.this.name
-  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 8, 1)
+  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 10, 0)
+  pe_snet_address_prefix    = cidrsubnet(local.vnet_cidr, 10, 1)
   sku                       = var.database_sku
   db_version                = var.database_version
   backup_retention_days     = var.database_backup_retention_days
@@ -85,18 +86,17 @@ module "backend" {
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   vnet_name           = azurerm_virtual_network.this.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 8, 2)
+  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 2)
   sku                 = var.backend_sku
   worker_count        = var.backend_worker_count
   docker_registry_url = var.backend_docker_registry_url
   docker_image_name   = var.backend_docker_image_name
   docker_image_tag    = var.backend_docker_image_tag
-  app_settings = {
-    "SPRING_DATASOURCE_URL"      = "jdbc:mysql://${module.database.fqdn}:3306/${var.database_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
-    "SPRING_DATASOURCE_USERNAME" = var.database_admin_username
-    # "SPRING_DATASOURCE_PASSWORD" = ephemeral.azurerm_key_vault_secret.db_pass.value
-    "SERVER_PORT" = var.backend_port
-  }
+  port                = var.backend_port
+  db_fqdn             = module.database.fqdn
+  db_name             = var.database_name
+  db_username         = var.database_admin_username
+  db_password         = "temp" # ephemeral.azurerm_key_vault_secret.db_pass.value
 }
 
 module "frontend" {

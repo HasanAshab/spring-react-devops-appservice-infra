@@ -35,7 +35,7 @@ resource "azurerm_subnet" "pe" {
   name                 = module.naming.subnet.name_unique
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefixes     = [var.snet_address_prefix]
+  address_prefixes     = [var.pe_snet_address_prefix]
 }
 
 resource "azurerm_mysql_flexible_server" "this" {

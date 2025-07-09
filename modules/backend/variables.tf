@@ -40,12 +40,6 @@ variable "worker_count" {
   type        = number
 }
 
-variable "app_settings" {
-  description = "Application Settings"
-  type        = map(string)
-  default     = {}
-}
-
 variable "docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
@@ -62,7 +56,28 @@ variable "docker_image_tag" {
   default     = "latest"
 }
 
-# variable "private_dns_zone_id" {
-#   description = "Private DNS Zone ID"
-#   type        = string
-# }
+variable "port" {
+  description = "Port"
+  type        = string
+}
+
+variable "db_name" {
+  description = "Database Name"
+  type        = string
+}
+
+variable "db_username" {
+  description = "Database Username"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database Password"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_fqdn" {
+  description = "Database FQDN"
+  type        = string
+}

@@ -34,6 +34,11 @@ variable "snet_address_prefix" {
   type        = string
 }
 
+variable "pe_snet_address_prefix" {
+  description = "Subnet Address Prefix of Private Endpoint"
+  type        = string
+}
+
 variable "sku" {
   description = "SKU of MySQL Server"
   type        = string
