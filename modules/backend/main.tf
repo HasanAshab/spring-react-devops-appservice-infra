@@ -15,6 +15,20 @@ module "asp" {
   zone_balancing_enabled = false
 }
 
+resource "azurerm_user_assigned_identity" "this" {
+  count               = var.vault == null ? 0 : 1
+  name                = "webapp-uami"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+}
+
+resource "azurerm_role_assignment" "kv_access" {
+  count                = var.vault == null ? 0 : 1
+  role_definition_name = var.vault.role
+  scope                = var.vault.scope
+  principal_id         = azurerm_user_assigned_identity.this[0].principal_id
+}
+
 resource "azurerm_subnet" "this" {
   name                 = module.naming.subnet.name_unique
   resource_group_name  = var.resource_group_name
@@ -45,6 +59,7 @@ module "webapp" {
     SPRING_DATASOURCE_USERNAME = var.db_username
     SPRING_DATASOURCE_PASSWORD = var.db_password
   }
+  key_vault_reference_identity_id = try(azurerm_user_assigned_identity.this[0].id, null)
   site_config = {
     vnet_route_all_enabled = true
     application_stack = {
@@ -54,6 +69,7 @@ module "webapp" {
       }
     }
   }
+  depends_on = [azurerm_role_assignment.kv_access]
 }
 
 # resource "azurerm_subnet" "pe" {

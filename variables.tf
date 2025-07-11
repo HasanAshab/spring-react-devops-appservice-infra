@@ -20,6 +20,11 @@ variable "vault_sku" {
   type        = string
 }
 
+variable "vault_role" {
+  description = "Key Vault Role"
+  type        = string
+}
+
 # Database
 variable "database_sku" {
   description = "SKU of MySQL Server"

@@ -87,3 +87,12 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "vault" {
+  description = "Vault Configuration"
+  type = object({
+    scope = string
+    role  = string
+  })
+  default = null
+}

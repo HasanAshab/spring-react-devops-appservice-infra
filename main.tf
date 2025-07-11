@@ -31,6 +31,7 @@ module "vault" {
   vnet_id             = azurerm_virtual_network.this.id
   vnet_name           = azurerm_virtual_network.this.name
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 0)
+  role                = var.vault_role
   secrets = {
     db_pass = {
       name = "database-admin-password"
@@ -39,14 +40,13 @@ module "vault" {
   secrets_value = {
     db_pass = resource.random_password.db.result
   }
-  role = "Key Vault Administrator"
 }
 
 
-ephemeral "azurerm_key_vault_secret" "db_pass" {
-  name         = "database-admin-password"
-  key_vault_id = module.vault.resource_id
-}
+# ephemeral "azurerm_key_vault_secret" "db_pass" {
+#   name         = "database-admin-password"
+#   key_vault_id = module.vault.resource_id
+# }
 
 module "database" {
   source                    = "./modules/database"
@@ -60,7 +60,7 @@ module "database" {
   db_version                = var.database_version
   backup_retention_days     = var.database_backup_retention_days
   admin_username            = var.database_admin_username
-  admin_password_wo         = "Passr@sadad.1213" # ephemeral.azurerm_key_vault_secret.db_pass.value
+  admin_password_wo         = random_password.db.result
   admin_password_wo_version = local.db_password_version
   db_name                   = var.database_name
 }
@@ -82,7 +82,11 @@ module "backend" {
   db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
-  db_password         = "Passr@sadad.1213" # ephemeral.azurerm_key_vault_secret.db_pass.value
+  db_password         = "@Microsoft.KeyVault(SecretUri=${module.vault.secrets.db_pass.id})"
+  vault = {
+    scope = module.vault.resource_id
+    role  = var.vault_role
+  }
 }
 
 module "frontend" {

@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -euo pipefail
+set -euo pipefail
 
 # Function to load environment variables from a file
 load_env_file() {
@@ -29,32 +29,5 @@ if [[ ! -f "$ENV_FILE" ]]; then
 fi
 
 load_env_file "$ENV_FILE"
-
-# Set up Python virtual environment
-VENV_DIR=".venv"
-
-if [[ ! -d "$VENV_DIR" ]]; then
-  echo "🚧 .venv not found, creating virtual environment..."
-  if ! command -v python &> /dev/null; then
-    echo "❌ 'python' not found in PATH. Aborting."
-    exit 1
-  fi
-
-  python -m venv "$VENV_DIR"
-  echo "✅ Virtual environment created at $VENV_DIR"
-
-  if [[ -f "requirements.txt" ]]; then
-    echo "📦 Installing dependencies from requirements.txt"
-    source "$VENV_DIR/scripts/activate"
-    pip install --upgrade pip
-    pip install -r requirements.txt
-  else
-    echo "⚠️  requirements.txt not found. Skipping dependency install."
-  fi
-fi
-
-# Activate the virtual environment
-echo "🐍 Activating virtual environment"
-source "$VENV_DIR/scripts/activate"
 
 echo "✅ Environment ready (Terraform workspace: $WORKSPACE)"
