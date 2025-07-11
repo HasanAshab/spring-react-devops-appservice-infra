@@ -1,6 +1,7 @@
-variable "name" {
-  description = "Name of Key Vault"
-  type        = string
+variable "extra_naming_suffix" {
+  description = "Extra Naming Suffix (be-*)"
+  type        = list(string)
+  default     = []
 }
 
 variable "enable_telemetry" {
@@ -33,6 +34,21 @@ variable "role" {
   description = "Role to Assign for Key Vault"
   type        = string
   default     = "Key Vault Administrator"
+}
+
+variable "vnet_id" {
+  description = "Virtual Network ID"
+  type        = string
+}
+
+variable "vnet_name" {
+  description = "Virtual Network Name"
+  type        = string
+}
+
+variable "snet_address_prefix" {
+  description = "Subnet Address Prefix of Private Endpoint"
+  type        = string
 }
 
 variable "secrets" {

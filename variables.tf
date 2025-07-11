@@ -103,7 +103,3 @@ variable "frontend_docker_image_tag" {
   description = "Docker Image Tag"
   type        = string
 }
-
-variable "foo" {
-  default = "bar"
-}

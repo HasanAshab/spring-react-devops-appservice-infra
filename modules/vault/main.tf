@@ -1,18 +1,33 @@
 data "azurerm_client_config" "current" {}
 
-data "http" "ip" {
-  url = "https://api.ipify.org/"
-  retry {
-    attempts     = 5
-    max_delay_ms = 1000
-    min_delay_ms = 500
-  }
+module "naming" {
+  source = "git::https://github.com/Azure/terraform-azurerm-naming.git?ref=75d5afa" # v0.4.2
+  suffix = concat(local.naming_suffix, var.extra_naming_suffix)
+}
+
+resource "azurerm_private_dns_zone" "this" {
+  name                = local.dns_zone_name
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "this" {
+  name                  = "dns-link"
+  resource_group_name   = var.resource_group_name
+  virtual_network_id    = var.vnet_id
+  private_dns_zone_name = azurerm_private_dns_zone.this.name
+}
+
+resource "azurerm_subnet" "this" {
+  name                 = module.naming.subnet.name_unique
+  resource_group_name  = var.resource_group_name
+  address_prefixes     = [var.snet_address_prefix]
+  virtual_network_name = var.vnet_name
 }
 
 module "vault" {
   source                        = "git::https://github.com/Azure/terraform-azurerm-avm-res-keyvault-vault.git?ref=2dd068b"
   enable_telemetry              = var.enable_telemetry
-  name                          = var.name
+  name                          = module.naming.key_vault.name
   location                      = var.location
   resource_group_name           = var.resource_group_name
   sku_name                      = var.sku
@@ -26,8 +41,12 @@ module "vault" {
       principal_id               = data.azurerm_client_config.current.object_id
     }
   }
-  network_acls = {
-    bypass   = "AzureServices"
-    ip_rules = ["${data.http.ip.response_body}/27"]
+  private_endpoints = {
+    primary = {
+      subnet_resource_id = azurerm_subnet.this.id
+      private_dns_zone_resource_ids = [
+        azurerm_private_dns_zone.this.id
+      ]
+    }
   }
 }
