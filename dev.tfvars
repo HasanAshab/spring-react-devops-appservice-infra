@@ -1,10 +1,6 @@
 location         = "centralus"
 enable_telemetry = false
 
-# vault
-vault_sku  = "standard"
-vault_role = "Key Vault Administrator"
-
 # database
 database_sku                   = "B_Standard_B1ms"
 database_version               = "8.0.21"

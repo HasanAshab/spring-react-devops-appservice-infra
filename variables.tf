@@ -14,16 +14,6 @@ variable "enable_telemetry" {
   default     = true
 }
 
-# Vault
-variable "vault_sku" {
-  description = "SKU of Key Vault"
-  type        = string
-}
-
-variable "vault_role" {
-  description = "Key Vault Role"
-  type        = string
-}
 
 # Database
 variable "database_sku" {

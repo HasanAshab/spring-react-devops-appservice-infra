@@ -21,33 +21,6 @@ resource "random_password" "db" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-module "vault" {
-  source              = "./modules/vault"
-  enable_telemetry    = var.enable_telemetry
-  extra_naming_suffix = local.extra_naming_suffix
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = var.vault_sku
-  vnet_id             = azurerm_virtual_network.this.id
-  vnet_name           = azurerm_virtual_network.this.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 0)
-  role                = var.vault_role
-  secrets = {
-    db_pass = {
-      name = "database-admin-password"
-    }
-  }
-  secrets_value = {
-    db_pass = resource.random_password.db.result
-  }
-}
-
-
-# ephemeral "azurerm_key_vault_secret" "db_pass" {
-#   name         = "database-admin-password"
-#   key_vault_id = module.vault.resource_id
-# }
-
 module "database" {
   source                    = "./modules/database"
   extra_naming_suffix       = local.extra_naming_suffix
@@ -55,7 +28,7 @@ module "database" {
   resource_group_name       = azurerm_resource_group.this.name
   vnet_id                   = azurerm_virtual_network.this.id
   vnet_name                 = azurerm_virtual_network.this.name
-  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 10, 1)
+  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 10, 0)
   sku                       = var.database_sku
   db_version                = var.database_version
   backup_retention_days     = var.database_backup_retention_days
@@ -72,7 +45,7 @@ module "backend" {
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   vnet_name           = azurerm_virtual_network.this.name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 2)
+  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 1)
   sku                 = var.backend_sku
   worker_count        = var.backend_worker_count
   docker_registry_url = var.backend_docker_registry_url
@@ -82,11 +55,7 @@ module "backend" {
   db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
-  db_password         = "@Microsoft.KeyVault(SecretUri=${module.vault.secrets.db_pass.id})"
-  vault = {
-    scope = module.vault.resource_id
-    role  = var.vault_role
-  }
+  db_password         = random_password.db.result
 }
 
 module "frontend" {
