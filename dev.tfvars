@@ -5,7 +5,7 @@ enable_telemetry = false
 database_sku                   = "B_Standard_B1ms"
 database_version               = "8.0.21"
 database_backup_retention_days = 3
-database_name                  = "db-prod"
+database_name                  = "db"
 database_admin_username        = "admin4321"
 
 # backend

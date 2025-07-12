@@ -50,6 +50,8 @@ module "backend" {
   db_name             = var.database_name
   db_username         = var.database_admin_username
   db_password         = var.database_admin_password
+
+  depends_on = [module.database]
 }
 
 module "frontend" {

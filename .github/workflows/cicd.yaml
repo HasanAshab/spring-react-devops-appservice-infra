@@ -21,8 +21,6 @@ env:
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   INFRACOST_API_KEY : ${{ secrets.INFRACOST_API_KEY }}
-  WORKSPACE_NAME: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
-  TFVARS_FILE: ${{ github.ref_name == 'main' && 'prod.tfvars' || format('{0}.tfvars', github.ref_name) }}
 
 permissions:
   contents: read
@@ -59,6 +57,9 @@ jobs:
 
   test:
     name: Unit Test
+    strategy:
+      matrix:
+        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -66,7 +67,7 @@ jobs:
       - name: Terraform Test
         uses: dflook/terraform-test@v2
         with:
-          var_file: ${{ env.TFVARS_FILE }}
+          var_file: ${{ matrix.workspace }}.tfvars
 
   validate:
     name: Validate
@@ -101,14 +102,17 @@ jobs:
     name: Plan
     if: github.event_name == 'pull_request'
     needs: [format, lint, test, validate, scan]
+    strategy:
+      matrix:
+        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: dflook/terraform-plan@v2
         with:
-          workspace: ${{ env.WORKSPACE_NAME }}
-          var_file: ${{ env.TFVARS_FILE }}
+          workspace: ${{ matrix.workspace }}
+          var_file: ${{ matrix.workspace }}.tfvars
 
   cost-estimation:
     name: Pre-Deployment Cost Estimation
@@ -152,6 +156,9 @@ jobs:
     environment: production
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [format, lint, test, validate, scan]
+    strategy:
+      matrix:
+        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -159,8 +166,8 @@ jobs:
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
         with:
-          workspace: ${{ env.WORKSPACE_NAME }}
-          var_file: ${{ env.TFVARS_FILE }}
+          workspace: ${{ matrix.workspace }}
+          var_file: ${{ matrix.workspace }}.tfvars
 
   cost-analysis:
     name: Post-Deployment Cost Analysis and Report

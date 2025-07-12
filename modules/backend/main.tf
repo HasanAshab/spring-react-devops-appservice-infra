@@ -55,31 +55,3 @@ module "webapp" {
     }
   }
 }
-
-# resource "azurerm_subnet" "pe" {
-#   name                 = "snet-pe-${var.project_name}-${terraform.workspace}-${var.location}-001"
-#   resource_group_name  = var.resource_group_name
-#   virtual_network_name = var.vnet_name
-#   address_prefixes     = ["10.254.4.0/24"]
-
-#   private_endpoint_network_policies = "Enabled"
-# }
-
-# resource "azurerm_private_endpoint" "app" {
-#   name                = "pe-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   subnet_id           = azurerm_subnet.pe.id
-
-#   private_service_connection {
-#     name                           = "default"
-#     private_connection_resource_id = azurerm_linux_web_app.this.id
-#     subresource_names              = ["sites"]
-#     is_manual_connection           = false
-#   }
-
-#   private_dns_zone_group {
-#     name                 = "default"
-#     private_dns_zone_ids = [var.private_dns_zone_id]
-#   }
-# }
