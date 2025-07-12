@@ -15,12 +15,6 @@ resource "azurerm_virtual_network" "this" {
   address_space       = [local.vnet_cidr]
 }
 
-resource "random_password" "db" {
-  length           = 12
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
-}
-
 module "database" {
   source                    = "./modules/database"
   extra_naming_suffix       = local.extra_naming_suffix
@@ -33,7 +27,7 @@ module "database" {
   db_version                = var.database_version
   backup_retention_days     = var.database_backup_retention_days
   admin_username            = var.database_admin_username
-  admin_password_wo         = random_password.db.result
+  admin_password_wo         = var.database_admin_password
   admin_password_wo_version = local.db_password_version
   db_name                   = var.database_name
 }
@@ -55,7 +49,7 @@ module "backend" {
   db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
-  db_password         = random_password.db.result
+  db_password         = var.database_admin_password
 }
 
 module "frontend" {

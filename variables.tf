@@ -41,6 +41,12 @@ variable "database_admin_username" {
   type        = string
 }
 
+variable "database_admin_password" {
+  description = "Database Admin Password"
+  type        = string
+  sensitive   = true
+}
+
 # Backend
 variable "backend_sku" {
   description = "SKU of VM-Scale Set"
