@@ -20,7 +20,8 @@ env:
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  INFRACOST_API_KEY : ${{ secrets.INFRACOST_API_KEY }}
+  INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  TF_VAR_database_admin_password: Password@123
 
 permissions:
   contents: read
