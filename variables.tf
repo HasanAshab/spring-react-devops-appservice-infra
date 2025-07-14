@@ -8,11 +8,12 @@ variable "location" {
   }
 }
 
-# Vault
-variable "vault_sku" {
-  description = "SKU of Key Vault"
-  type        = string
+variable "enable_telemetry" {
+  description = "Enable Telemetry for all modules"
+  type        = bool
+  default     = true
 }
+
 
 # Database
 variable "database_sku" {
@@ -25,6 +26,11 @@ variable "database_version" {
   type        = string
 }
 
+variable "database_backup_retention_days" {
+  description = "Backup Retention Days"
+  type        = number
+}
+
 variable "database_name" {
   description = "Database Name"
   type        = string
@@ -33,6 +39,12 @@ variable "database_name" {
 variable "database_admin_username" {
   description = "Database Admin Username"
   type        = string
+}
+
+variable "database_admin_password" {
+  description = "Database Admin Password"
+  type        = string
+  sensitive   = true
 }
 
 # Backend

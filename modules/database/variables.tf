@@ -30,7 +30,7 @@ variable "vnet_name" {
 }
 
 variable "snet_address_prefix" {
-  description = "Subnet Address Prefix"
+  description = "Subnet Address Prefix of Private Endpoint"
   type        = string
 }
 
@@ -66,16 +66,9 @@ variable "admin_password_wo_version" {
   type        = number
 }
 
-variable "geo_redundant_backup_enabled" {
-  description = "Enable Geo-redundant Backup"
-  type        = bool
-  default     = false
-}
-
 variable "backup_retention_days" {
   description = "Backup Retention Days"
   type        = number
-  default     = 7
 }
 
 variable "storage_size_gb" {

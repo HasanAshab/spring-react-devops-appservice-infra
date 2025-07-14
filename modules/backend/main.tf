@@ -1,12 +1,11 @@
 module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "0.4.2"
-  suffix  = concat(local.naming_suffix, var.extra_naming_suffix)
+  source = "git::https://github.com/Azure/terraform-azurerm-naming.git?ref=75d5afa" # v0.4.2
+  suffix = concat(local.naming_suffix, var.extra_naming_suffix)
 }
 
 module "asp" {
-  source                 = "Azure/avm-res-web-serverfarm/azurerm"
-  version                = "0.7.0"
+  source                 = "git::https://github.com/Azure/terraform-azurerm-avm-res-web-serverfarm.git?ref=8ca49e2" # v0.7.0
+  enable_telemetry       = var.enable_telemetry
   name                   = module.naming.app_service_plan.name
   resource_group_name    = var.resource_group_name
   location               = var.location
@@ -31,16 +30,21 @@ resource "azurerm_subnet" "this" {
 }
 
 module "webapp" {
-  source                    = "Azure/avm-res-web-site/azurerm"
-  version                   = "0.17.2"
+  source                    = "git::https://github.com/Azure/terraform-azurerm-avm-res-web-site.git?ref=5388703" # v0.17.2
   kind                      = "webapp"
   os_type                   = local.os_type
+  enable_telemetry          = var.enable_telemetry
   name                      = module.naming.app_service.name
   resource_group_name       = var.resource_group_name
   location                  = var.location
   service_plan_resource_id  = module.asp.resource_id
-  app_settings              = var.app_settings
   virtual_network_subnet_id = azurerm_subnet.this.id
+  app_settings = {
+    SERVER_PORT                = var.port
+    SPRING_DATASOURCE_URL      = "jdbc:mysql://${var.db_host}:3306/${var.db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
+    SPRING_DATASOURCE_USERNAME = var.db_username
+    SPRING_DATASOURCE_PASSWORD = var.db_password
+  }
   site_config = {
     vnet_route_all_enabled = true
     application_stack = {
@@ -51,31 +55,3 @@ module "webapp" {
     }
   }
 }
-
-# resource "azurerm_subnet" "pe" {
-#   name                 = "snet-pe-${var.project_name}-${terraform.workspace}-${var.location}-001"
-#   resource_group_name  = var.resource_group_name
-#   virtual_network_name = var.vnet_name
-#   address_prefixes     = ["10.254.4.0/24"]
-
-#   private_endpoint_network_policies = "Enabled"
-# }
-
-# resource "azurerm_private_endpoint" "app" {
-#   name                = "pe-app-${var.project_name}-${terraform.workspace}-${var.location}-001"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   subnet_id           = azurerm_subnet.pe.id
-
-#   private_service_connection {
-#     name                           = "default"
-#     private_connection_resource_id = azurerm_linux_web_app.this.id
-#     subresource_names              = ["sites"]
-#     is_manual_connection           = false
-#   }
-
-#   private_dns_zone_group {
-#     name                 = "default"
-#     private_dns_zone_ids = [var.private_dns_zone_id]
-#   }
-# }

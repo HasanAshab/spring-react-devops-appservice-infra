@@ -13,17 +13,22 @@ on:
       - '**/*.tf'
       - '*.tfvars'
       - '.github/workflows/cicd.yaml'
+
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  INFRACOST_API_KEY : ${{ secrets.INFRACOST_API_KEY }}
+  INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+  TF_VAR_database_admin_password: Password@123
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
-    name: Lint
+  format:
+    name: format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,8 +36,31 @@ jobs:
       - name: Terraform fmt
         uses: dflook/terraform-fmt-check@v2
 
+  lint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout source code
+
+    - uses: actions/cache@v4
+      with:
+        path: ~/.tflint.d/plugins
+        key: tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v4
+
+    - name: Init TFLint
+      run: tflint --init
+
+    - name: Run TFLint
+      run: tflint --config="$(pwd)/.tflint.hcl" --recursive
+
   test:
     name: Unit Test
+    strategy:
+      matrix:
+        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +68,7 @@ jobs:
       - name: Terraform Test
         uses: dflook/terraform-test@v2
         with:
-          var_file: prod.tfvars
+          var_file: ${{ matrix.workspace }}.tfvars
 
   validate:
     name: Validate
@@ -51,33 +79,54 @@ jobs:
       - name: Terraform Validate
         uses: dflook/terraform-validate@v2
 
+  scan:
+    name: Security Scan
+    permissions:
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bridgecrewio/checkov-action@v12
+        with:
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
+
   plan:
     name: Plan
     if: github.event_name == 'pull_request'
-    needs: [lint, test, validate]
+    needs: [format, lint, test, validate, scan]
+    strategy:
+      matrix:
+        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: dflook/terraform-plan@v2
         with:
-          workspace: prod
-          var_file: prod.tfvars
+          workspace: ${{ matrix.workspace }}
+          var_file: ${{ matrix.workspace }}.tfvars
 
   cost-estimation:
     name: Pre-Deployment Cost Estimation
     needs: plan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v3
-
       - name: Checkout base branch
         uses: actions/checkout@v4
         with:
           ref: '${{ github.event.pull_request.base.ref }}'
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
 
       - name: Generate Infracost cost estimate baseline
         run: |
@@ -107,7 +156,10 @@ jobs:
     name: Apply
     environment: production
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [lint, test, validate]
+    needs: [format, lint, test, validate, scan]
+    strategy:
+      matrix:
+        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -115,8 +167,8 @@ jobs:
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
         with:
-          workspace: prod
-          var_file: prod.tfvars
+          workspace: ${{ matrix.workspace }}
+          var_file: ${{ matrix.workspace }}.tfvars
 
   cost-analysis:
     name: Post-Deployment Cost Analysis and Report

@@ -4,6 +4,12 @@ variable "extra_naming_suffix" {
   default     = []
 }
 
+variable "enable_telemetry" {
+  description = "Enable Telemetry for this module"
+  type        = bool
+  default     = true
+}
+
 variable "location" {
   description = "Location of all resources"
   type        = string
@@ -27,12 +33,6 @@ variable "sku" {
 variable "worker_count" {
   description = "Number of Workers"
   type        = number
-}
-
-variable "app_settings" {
-  description = "Application Settings"
-  type        = map(string)
-  default     = {}
 }
 
 variable "docker_registry_url" {
