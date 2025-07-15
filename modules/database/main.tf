@@ -45,6 +45,9 @@ resource "azurerm_mysql_flexible_server" "this" {
   }
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.this]
+  lifecycle {
+    prevent_destroy = terraform.workspace == "prod"
+  }
 }
 
 resource "azurerm_private_endpoint" "default" {
