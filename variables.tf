@@ -47,16 +47,56 @@ variable "database_admin_password" {
   sensitive   = true
 }
 
-# Backend
-variable "backend_sku" {
-  description = "SKU of VM-Scale Set"
+
+# App Service Plan
+
+variable "asp_os_type" {
+  description = "OS Type of Service Plan"
+
+  type        = string
+  default     = "Linux"
+}
+
+variable "asp_sku" {
+  description = "SKU of Service Plan"
   type        = string
 }
 
-variable "backend_worker_count" {
+variable "asp_worker_count" {
   description = "Number of Workers"
   type        = number
 }
+
+variable "asp_enable_zone_balancing" {
+  description = "Enable Zone Balancing for Service Plan"
+  type        = bool
+}
+
+variable "asp_enable_autoscale" {
+  description = "Enable Autoscale for Service Plan"
+  type        = bool
+}
+
+variable "asp_autoscale_minimum_capacity" {
+  description = "Minimum Capacity for Autoscale"
+  type        = number
+  default     = null
+}
+
+variable "asp_autoscale_maximum_capacity" {
+  description = "Maximum Capacity for Autoscale"
+  type        = number
+  default     = null
+}
+
+variable "asp_autoscale_default_capacity" {
+  description = "Default Capacity for Autoscale"
+  type        = number
+  default     = null
+}
+
+
+# Backend
 
 variable "backend_docker_registry_url" {
   description = "Docker Registry URL"
@@ -80,15 +120,6 @@ variable "backend_port" {
 }
 
 # Frontend
-variable "frontend_sku" {
-  description = "SKU of VM-Scale Set"
-  type        = string
-}
-
-variable "frontend_worker_count" {
-  description = "Number of Workers"
-  type        = number
-}
 
 variable "frontend_docker_registry_url" {
   description = "Docker Registry URL"

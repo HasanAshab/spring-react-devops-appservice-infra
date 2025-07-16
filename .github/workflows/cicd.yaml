@@ -157,9 +157,6 @@ jobs:
     environment: production
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [format, lint, test, validate, scan]
-    strategy:
-      matrix:
-        workspace: [dev, prod]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

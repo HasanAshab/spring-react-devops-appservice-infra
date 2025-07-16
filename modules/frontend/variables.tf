@@ -25,14 +25,9 @@ variable "resource_group_name" {
   type        = string
 }
 
-variable "sku" {
-  description = "SKU of VM-Scale Set"
+variable "asp_id" {
+  description = "App Service Plan ID"
   type        = string
-}
-
-variable "worker_count" {
-  description = "Number of Workers"
-  type        = number
 }
 
 variable "docker_registry_url" {

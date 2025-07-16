@@ -3,18 +3,6 @@ module "naming" {
   suffix = concat(local.naming_suffix, var.extra_naming_suffix)
 }
 
-module "asp" {
-  source                 = "git::https://github.com/Azure/terraform-azurerm-avm-res-web-serverfarm.git?ref=8ca49e2" # v0.7.0
-  enable_telemetry       = var.enable_telemetry
-  name                   = module.naming.app_service_plan.name
-  resource_group_name    = var.resource_group_name
-  location               = var.location
-  os_type                = local.os_type
-  sku_name               = var.sku
-  worker_count           = var.worker_count
-  zone_balancing_enabled = false
-}
-
 resource "azurerm_subnet" "this" {
   name                 = module.naming.subnet.name_unique
   resource_group_name  = var.resource_group_name
@@ -37,7 +25,8 @@ module "webapp" {
   name                      = module.naming.app_service.name
   resource_group_name       = var.resource_group_name
   location                  = var.location
-  service_plan_resource_id  = module.asp.resource_id
+  service_plan_resource_id  = var.asp_id
+
   virtual_network_subnet_id = azurerm_subnet.this.id
   app_settings = {
     SERVER_PORT                = var.port
