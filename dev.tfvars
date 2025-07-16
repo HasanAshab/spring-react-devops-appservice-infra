@@ -1,5 +1,6 @@
-location         = "centralus"
-enable_telemetry = false
+primary_location   = "centralus"
+secondary_location = "eastus"
+enable_telemetry   = false
 
 # asp
 asp_sku                   = "B1"

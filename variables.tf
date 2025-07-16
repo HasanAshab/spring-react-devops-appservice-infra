@@ -1,10 +1,26 @@
-variable "location" {
-  description = "Location of all resources"
+variable "primary_location" {
+  description = "The primary location of all resources"
   type        = string
 
   validation {
-    condition     = length(regexall(" ", var.location)) == 0
+    condition     = length(regexall(" ", var.primary_location)) == 0
     error_message = "Location must not contain spaces"
+  }
+}
+
+variable "secondary_location" {
+  description = "The secondary location. setting this enables disaster recovery"
+  type        = string
+  default     = null
+
+  validation {
+    condition     = length(regexall(" ", var.secondary_location)) == 0
+    error_message = "Location must not contain spaces"
+  }
+
+  validation {
+    condition     = var.secondary_location == null || var.secondary_location != var.primary_location
+    error_message = "Secondary location must be different from primary location"
   }
 }
 

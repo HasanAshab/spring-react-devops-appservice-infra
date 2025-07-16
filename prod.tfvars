@@ -1,4 +1,4 @@
-location         = "centralus"
+locations        = ["centralus", "eastus"]
 enable_telemetry = true
 
 # asp

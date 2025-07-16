@@ -1,27 +1,30 @@
 module "naming" {
-  source = "git::https://github.com/Azure/terraform-azurerm-naming.git?ref=75d5afa" # v0.4.2
-  suffix = [local.project_name, terraform.workspace, var.location]
+  for_each = local.locations
+  source   = "git::https://github.com/Azure/terraform-azurerm-naming.git?ref=75d5afa" # v0.4.2
+  suffix   = [local.project_name, terraform.workspace, each.key]
 }
 
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name
-  location = var.location
+  for_each = local.locations
+  name     = module.naming[each.key].resource_group.name
+  location = each.key
 }
 
 resource "azurerm_virtual_network" "this" {
-  name                = module.naming.virtual_network.name
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+  for_each            = local.locations
+  name                = module.naming[each.key].virtual_network.name
+  location            = azurerm_resource_group.this[each.key].location
+  resource_group_name = azurerm_resource_group.this[each.key].name
   address_space       = [local.vnet_cidr]
 }
 
 module "database" {
   source                    = "./modules/database"
-  extra_naming_suffix       = local.extra_naming_suffix
-  location                  = azurerm_resource_group.this.location
-  resource_group_name       = azurerm_resource_group.this.name
-  vnet_id                   = azurerm_virtual_network.this.id
-  vnet_name                 = azurerm_virtual_network.this.name
+  extra_naming_suffix       = local.extra_naming_suffixes[var.primary_location]
+  location                  = azurerm_resource_group.this[var.primary_location].location
+  resource_group_name       = azurerm_resource_group.this[var.primary_location].name
+  vnet_id                   = azurerm_virtual_network.this[var.primary_location].id
+  vnet_name                 = azurerm_virtual_network.this[var.primary_location].name
   snet_address_prefix       = cidrsubnet(local.vnet_cidr, 10, 0)
   sku                       = var.database_sku
   db_version                = var.database_version
@@ -33,10 +36,11 @@ module "database" {
 }
 
 module "asp" {
+  for_each              = local.locations
   source                = "./modules/asp"
-  naming_suffix         = local.extra_naming_suffix
-  resource_group_name   = azurerm_resource_group.this.name
-  location              = azurerm_resource_group.this.location
+  naming_suffix         = local.extra_naming_suffixes[each.key]
+  resource_group_name   = azurerm_resource_group.this[each.key].name
+  location              = azurerm_resource_group.this[each.key].location
   os_type               = var.asp_os_type
   sku                   = var.asp_sku
   worker_count          = var.asp_worker_count
@@ -86,13 +90,14 @@ module "asp" {
 }
 
 module "backend" {
+  for_each            = local.locations
   source              = "./modules/backend"
-  extra_naming_suffix = local.extra_naming_suffix
+  extra_naming_suffix = local.extra_naming_suffixes[each.key]
   enable_telemetry    = var.enable_telemetry
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  asp_id              = module.asp.resource_id
-  vnet_name           = azurerm_virtual_network.this.name
+  location            = azurerm_resource_group.this[each.key].location
+  resource_group_name = azurerm_resource_group.this[each.key].name
+  asp_id              = module.asp[each.key].resource_id
+  vnet_name           = azurerm_virtual_network.this[each.key].name
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 1)
   docker_registry_url = var.backend_docker_registry_url
   docker_image_name   = var.backend_docker_image_name
@@ -106,12 +111,13 @@ module "backend" {
 }
 
 module "frontend" {
+  for_each            = local.locations
   source              = "./modules/frontend"
-  extra_naming_suffix = local.extra_naming_suffix
+  extra_naming_suffix = local.extra_naming_suffixes[each.key]
   enable_telemetry    = var.enable_telemetry
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  asp_id              = module.asp.resource_id
+  location            = azurerm_resource_group.this[each.key].location
+  resource_group_name = azurerm_resource_group.this[each.key].name
+  asp_id              = module.asp[each.key].resource_id
   docker_registry_url = var.frontend_docker_registry_url
   docker_image_name   = var.frontend_docker_image_name
   docker_image_tag    = var.frontend_docker_image_tag
