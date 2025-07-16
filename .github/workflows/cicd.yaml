@@ -164,8 +164,8 @@ jobs:
       - name: Terraform Apply
         uses: dflook/terraform-apply@v2
         with:
-          workspace: prod
-          var_file: prod.tfvars
+          workspace: ${{ matrix.workspace }}
+          var_file: ${{ matrix.workspace }}.tfvars
 
   cost-analysis:
     name: Post-Deployment Cost Analysis and Report

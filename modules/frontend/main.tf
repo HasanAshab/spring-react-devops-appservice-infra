@@ -12,6 +12,7 @@ module "webapp" {
   resource_group_name      = var.resource_group_name
   location                 = var.location
   service_plan_resource_id = var.asp_id
+
   site_config = {
     vnet_route_all_enabled = true
     application_stack = {

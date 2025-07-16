@@ -47,10 +47,12 @@ variable "database_admin_password" {
   sensitive   = true
 }
 
+
 # App Service Plan
 
 variable "asp_os_type" {
   description = "OS Type of Service Plan"
+
   type        = string
   default     = "Linux"
 }

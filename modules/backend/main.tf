@@ -26,6 +26,7 @@ module "webapp" {
   resource_group_name       = var.resource_group_name
   location                  = var.location
   service_plan_resource_id  = var.asp_id
+
   virtual_network_subnet_id = azurerm_subnet.this.id
   app_settings = {
     SERVER_PORT                = var.port
