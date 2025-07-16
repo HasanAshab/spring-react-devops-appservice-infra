@@ -2,14 +2,10 @@ location         = "centralus"
 enable_telemetry = false
 
 # asp
-asp_sku                        = "B1"
-asp_worker_count               = 1
-asp_enable_zone_balancing      = false
-asp_enable_autoscale           = true
-asp_autoscale_default_capacity = 1
-asp_autoscale_minimum_capacity = 1
-asp_autoscale_maximum_capacity = 5
-
+asp_sku                   = "B1"
+asp_worker_count          = 1
+asp_enable_zone_balancing = false
+asp_enable_autoscale      = false
 
 # database
 database_sku                   = "B_Standard_B1ms"

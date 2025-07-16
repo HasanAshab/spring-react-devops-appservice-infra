@@ -2,7 +2,7 @@ location         = "centralus"
 enable_telemetry = true
 
 # asp
-asp_sku                        = "B1"
+asp_sku                        = "S1"
 asp_worker_count               = 2
 asp_enable_zone_balancing      = true
 asp_enable_autoscale           = true

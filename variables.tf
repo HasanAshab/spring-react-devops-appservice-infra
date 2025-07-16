@@ -73,7 +73,6 @@ variable "asp_enable_zone_balancing" {
 variable "asp_enable_autoscale" {
   description = "Enable Autoscale for Service Plan"
   type        = bool
-  default     = false
 }
 
 variable "asp_autoscale_minimum_capacity" {
