@@ -40,6 +40,11 @@ variable "asp_id" {
   type        = string
 }
 
+variable "os_type" {
+  description = "OS Type"
+  type        = string
+}
+
 variable "docker_registry_url" {
   description = "Docker Registry URL"
   type        = string

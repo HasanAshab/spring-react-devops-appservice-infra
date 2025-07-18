@@ -1,9 +1,4 @@
-output "backend_url" {
-  description = "Backend App URL"
-  value       = module.backend.url
-}
-
-output "frontend_url" {
-  description = "Frontend Web URL"
-  value       = module.frontend.url
-}
+# output "url" {
+#   description = "URL of Front Door"
+#   value       = azurerm_cdn_frontdoor_endpoint.this.host_name
+# }

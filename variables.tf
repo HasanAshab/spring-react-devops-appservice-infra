@@ -42,9 +42,15 @@ variable "database_version" {
   type        = string
 }
 
+variable "database_enable_geo_redundant_backup" {
+  description = "Enable Geo-Redundant Backup for MySQL Server"
+  type        = bool
+}
+
 variable "database_backup_retention_days" {
   description = "Backup Retention Days"
   type        = number
+  default     = null
 }
 
 variable "database_name" {

@@ -19,20 +19,21 @@ resource "azurerm_virtual_network" "this" {
 }
 
 module "database" {
-  source                    = "./modules/database"
-  extra_naming_suffix       = local.extra_naming_suffixes[var.primary_location]
-  location                  = azurerm_resource_group.this[var.primary_location].location
-  resource_group_name       = azurerm_resource_group.this[var.primary_location].name
-  vnet_id                   = azurerm_virtual_network.this[var.primary_location].id
-  vnet_name                 = azurerm_virtual_network.this[var.primary_location].name
-  snet_address_prefix       = cidrsubnet(local.vnet_cidr, 10, 0)
-  sku                       = var.database_sku
-  db_version                = var.database_version
-  backup_retention_days     = var.database_backup_retention_days
-  admin_username            = var.database_admin_username
-  admin_password_wo         = var.database_admin_password
-  admin_password_wo_version = local.db_password_version
-  db_name                   = var.database_name
+  source                      = "./modules/database"
+  extra_naming_suffix         = local.extra_naming_suffixes[var.primary_location]
+  location                    = azurerm_resource_group.this[var.primary_location].location
+  resource_group_name         = azurerm_resource_group.this[var.primary_location].name
+  vnet_id                     = azurerm_virtual_network.this[var.primary_location].id
+  vnet_name                   = azurerm_virtual_network.this[var.primary_location].name
+  snet_address_prefix         = cidrsubnet(local.vnet_cidr, 10, 0)
+  sku                         = var.database_sku
+  db_version                  = var.database_version
+  enable_geo_redundant_backup = var.database_enable_geo_redundant_backup
+  backup_retention_days       = var.database_backup_retention_days
+  admin_username              = var.database_admin_username
+  admin_password_wo           = var.database_admin_password
+  admin_password_wo_version   = local.db_password_version
+  db_name                     = var.database_name
 }
 
 module "asp" {
@@ -96,6 +97,7 @@ module "backend" {
   enable_telemetry    = var.enable_telemetry
   location            = azurerm_resource_group.this[each.key].location
   resource_group_name = azurerm_resource_group.this[each.key].name
+  os_type             = var.asp_os_type
   asp_id              = module.asp[each.key].resource_id
   vnet_name           = azurerm_virtual_network.this[each.key].name
   snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 1)
@@ -117,8 +119,25 @@ module "frontend" {
   enable_telemetry    = var.enable_telemetry
   location            = azurerm_resource_group.this[each.key].location
   resource_group_name = azurerm_resource_group.this[each.key].name
+  os_type             = var.asp_os_type
   asp_id              = module.asp[each.key].resource_id
   docker_registry_url = var.frontend_docker_registry_url
   docker_image_name   = var.frontend_docker_image_name
   docker_image_tag    = var.frontend_docker_image_tag
 }
+
+# module "frontdoor" {
+#   source = "./modules/frontdoor"
+#   resource_group_name = azurerm_resource_group.this[var.primary_location].name
+#   sku         = "Standard_AzureFrontDoor"
+#   origins = [
+#     {
+#       name      = "frontend"
+
+#       host_name = module.frontend[var.primary_location].fqdn
+
+#     }
+
+
+#   ]
+# }

@@ -66,9 +66,15 @@ variable "admin_password_wo_version" {
   type        = number
 }
 
+variable "enable_geo_redundant_backup" {
+  description = "Enable Geo-Redundant Backup"
+  type        = bool
+}
+
 variable "backup_retention_days" {
   description = "Backup Retention Days"
   type        = number
+  default     = null
 }
 
 variable "storage_size_gb" {

@@ -43,7 +43,6 @@ variable "worker_count" {
 variable "enable_zone_balancing" {
   description = "Enable Zone Balancing"
   type        = bool
-  default     = null
 }
 
 variable "autoscale_settings" {
