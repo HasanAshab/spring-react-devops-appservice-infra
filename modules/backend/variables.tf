@@ -66,6 +66,11 @@ variable "port" {
   type        = string
 }
 
+variable "front_door_guid" {
+  description = "Front Door GUID"
+  type        = string
+}
+
 variable "db_host" {
   description = "Database FQDN"
   type        = string

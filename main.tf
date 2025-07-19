@@ -19,35 +19,39 @@ resource "azurerm_virtual_network" "this" {
 }
 
 module "database" {
-  source                      = "./modules/database"
-  extra_naming_suffix         = local.extra_naming_suffixes[var.primary_location]
-  location                    = azurerm_resource_group.this[var.primary_location].location
-  resource_group_name         = azurerm_resource_group.this[var.primary_location].name
-  vnet_id                     = azurerm_virtual_network.this[var.primary_location].id
-  vnet_name                   = azurerm_virtual_network.this[var.primary_location].name
-  snet_address_prefix         = cidrsubnet(local.vnet_cidr, 10, 0)
-  sku                         = var.database_sku
-  db_version                  = var.database_version
-  enable_geo_redundant_backup = var.database_enable_geo_redundant_backup
-  backup_retention_days       = var.database_backup_retention_days
-  admin_username              = var.database_admin_username
-  admin_password_wo           = var.database_admin_password
-  admin_password_wo_version   = local.db_password_version
-  db_name                     = var.database_name
+  source                       = "./modules/database"
+  extra_naming_suffix          = local.extra_naming_suffixes[var.primary_location]
+  location                     = azurerm_resource_group.this[var.primary_location].location
+  resource_group_name          = azurerm_resource_group.this[var.primary_location].name
+  vnet_id                      = azurerm_virtual_network.this[var.primary_location].id
+  vnet_name                    = azurerm_virtual_network.this[var.primary_location].name
+  snet_address_prefix          = cidrsubnet(local.vnet_cidr, 10, 0)
+  sku                          = var.database_sku
+  db_version                   = var.database_version
+  admin_username               = var.database_admin_username
+  admin_password_wo            = var.database_admin_password
+  admin_password_wo_version    = local.db_password_version
+  db_name                      = var.database_name
+  backup_retention_days        = var.database_backup_retention_days
+  storage_size_gb              = var.database_storage_size_gb
+  geo_redundant_backup_enabled = var.database_geo_redundant_backup_enabled
+  zone_redundant_ha_enabled    = var.database_zone_redundant_ha_enabled
+  storage_auto_grow_enabled    = var.database_storage_auto_grow_enabled
+  storage_io_scaling_enabled   = var.database_storage_io_scaling_enabled
 }
 
 module "asp" {
-  for_each              = local.locations
-  source                = "./modules/asp"
-  naming_suffix         = local.extra_naming_suffixes[each.key]
-  resource_group_name   = azurerm_resource_group.this[each.key].name
-  location              = azurerm_resource_group.this[each.key].location
-  os_type               = var.asp_os_type
-  sku                   = var.asp_sku
-  worker_count          = var.asp_worker_count
-  enable_zone_balancing = var.asp_enable_zone_balancing
+  for_each               = local.locations
+  source                 = "./modules/asp"
+  naming_suffix          = local.extra_naming_suffixes[each.key]
+  resource_group_name    = azurerm_resource_group.this[each.key].name
+  location               = azurerm_resource_group.this[each.key].location
+  os_type                = var.asp_os_type
+  sku                    = var.asp_sku
+  worker_count           = var.asp_worker_count
+  zone_balancing_enabled = var.asp_zone_balancing_enabled
   autoscale_settings = {
-    enabled          = var.asp_enable_autoscale
+    enabled          = var.asp_autoscaling_enabled
     default_capacity = var.asp_autoscale_default_capacity
     minimum_capacity = var.asp_autoscale_minimum_capacity
     maximum_capacity = var.asp_autoscale_maximum_capacity
@@ -90,6 +94,11 @@ module "asp" {
   }
 }
 
+data "azurerm_cdn_frontdoor_profile" "this" {
+  name                = var.frontdoor_profile_name
+  resource_group_name = azurerm_resource_group.this[var.primary_location].name
+}
+
 module "backend" {
   for_each            = local.locations
   source              = "./modules/backend"
@@ -105,6 +114,7 @@ module "backend" {
   docker_image_name   = var.backend_docker_image_name
   docker_image_tag    = var.backend_docker_image_tag
   port                = var.backend_port
+  front_door_guid     = data.azurerm_cdn_frontdoor_profile.this.resource_guid
   db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
@@ -124,20 +134,38 @@ module "frontend" {
   docker_registry_url = var.frontend_docker_registry_url
   docker_image_name   = var.frontend_docker_image_name
   docker_image_tag    = var.frontend_docker_image_tag
+  front_door_guid     = data.azurerm_cdn_frontdoor_profile.this.resource_guid
 }
 
-# module "frontdoor" {
-#   source = "./modules/frontdoor"
-#   resource_group_name = azurerm_resource_group.this[var.primary_location].name
-#   sku         = "Standard_AzureFrontDoor"
-#   origins = [
-#     {
-#       name      = "frontend"
-
-#       host_name = module.frontend[var.primary_location].fqdn
-
-#     }
-
-
-#   ]
-# }
+module "frontdoor" {
+  source              = "./modules/frontdoor"
+  profile_name        = var.frontdoor_profile_name
+  resource_group_name = azurerm_resource_group.this[var.primary_location].name
+  sku                 = var.frontdoor_sku
+  routes = {
+    frontend = {
+      patterns_to_match = ["/*"]
+      origin_group = {
+        session_affinity_enabled = false
+      }
+      origins = [
+        for frontend in module.frontend : {
+          host_name = frontend.fqdn
+          priority  = 1
+        }
+      ]
+    }
+    backend = {
+      patterns_to_match = ["/api/*"]
+      origin_group = {
+        session_affinity_enabled = false
+      }
+      origins = [
+        for backend in module.backend : {
+          host_name = backend.fqdn
+          priority  = 1
+        }
+      ]
+    }
+  }
+}

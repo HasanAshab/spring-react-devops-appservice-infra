@@ -22,5 +22,20 @@ module "webapp" {
         docker_image_name   = "${var.docker_image_name}:${var.docker_image_tag}"
       }
     }
+    ip_restriction = {
+      allow_front_door = {
+        service_tag               = "AzureFrontDoor.Backend"
+        ip_address                = null
+        virtual_network_subnet_id = null
+        action                    = "Allow"
+        priority                  = 100
+        headers = {
+          front_door = {
+            x_azure_fdid = [var.front_door_guid]
+          }
+        }
+        name = "Allow traffic from Front Door"
+      }
+    }
   }
 }

@@ -30,8 +30,8 @@ variable "enable_telemetry" {
   default     = true
 }
 
-
 # Database
+
 variable "database_sku" {
   description = "SKU of MySQL Server"
   type        = string
@@ -40,17 +40,6 @@ variable "database_sku" {
 variable "database_version" {
   description = "Version of MySQL Server"
   type        = string
-}
-
-variable "database_enable_geo_redundant_backup" {
-  description = "Enable Geo-Redundant Backup for MySQL Server"
-  type        = bool
-}
-
-variable "database_backup_retention_days" {
-  description = "Backup Retention Days"
-  type        = number
-  default     = null
 }
 
 variable "database_name" {
@@ -67,6 +56,42 @@ variable "database_admin_password" {
   description = "Database Admin Password"
   type        = string
   sensitive   = true
+}
+
+variable "database_backup_retention_days" {
+  description = "Backup Retention Days"
+  type        = number
+  default     = 0
+}
+
+variable "database_geo_redundant_backup_enabled" {
+  description = "Enable Geo-Redundant Backup for MySQL Server"
+  type        = bool
+  default     = false
+}
+
+variable "database_zone_redundant_ha_enabled" {
+  description = "Enable Zone Redundant High Availability for MySQL Server"
+  type        = bool
+  default     = false
+}
+
+variable "database_storage_size_gb" {
+  description = "Database Storage Size (GB)"
+  type        = number
+  default     = null
+}
+
+variable "database_storage_auto_grow_enabled" {
+  description = "Enable Storage Auto Grow"
+  type        = bool
+  default     = false
+}
+
+variable "database_storage_io_scaling_enabled" {
+  description = "Enable Storage I/O Scaling"
+  type        = bool
+  default     = false
 }
 
 # App Service Plan
@@ -87,14 +112,16 @@ variable "asp_worker_count" {
   type        = number
 }
 
-variable "asp_enable_zone_balancing" {
+variable "asp_zone_balancing_enabled" {
   description = "Enable Zone Balancing for Service Plan"
   type        = bool
+  default     = false
 }
 
-variable "asp_enable_autoscale" {
-  description = "Enable Autoscale for Service Plan"
+variable "asp_autoscaling_enabled" {
+  description = "Enable Autoscaling for Service Plan"
   type        = bool
+  default     = false
 }
 
 variable "asp_autoscale_minimum_capacity" {
@@ -153,5 +180,17 @@ variable "frontend_docker_image_name" {
 
 variable "frontend_docker_image_tag" {
   description = "Docker Image Tag"
+  type        = string
+}
+
+# Front Door
+
+variable "frontdoor_profile_name" {
+  description = "Front Door Profile Name"
+  type        = string
+}
+
+variable "frontdoor_sku" {
+  description = "SKU of Front Door"
   type        = string
 }

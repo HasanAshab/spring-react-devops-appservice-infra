@@ -50,3 +50,8 @@ variable "docker_image_tag" {
   type        = string
   default     = "latest"
 }
+
+variable "front_door_guid" {
+  description = "Front Door GUID"
+  type        = string
+}

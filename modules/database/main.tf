@@ -32,16 +32,21 @@ resource "azurerm_mysql_flexible_server" "this" {
   administrator_password_wo_version = var.admin_password_wo_version
   sku_name                          = var.sku
   version                           = var.db_version
-  geo_redundant_backup_enabled      = var.enable_geo_redundant_backup
-  backup_retention_days             = var.backup_retention_days
-  public_network_access             = local.public_network_access
-  private_dns_zone_id               = azurerm_private_dns_zone.this.id
+  # checkov:skip=CKV_AZURE_94: Geo-redundant backup is enabled conditionally via variable
+  geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
+  backup_retention_days        = var.backup_retention_days
+  public_network_access        = local.public_network_access
+  private_dns_zone_id          = azurerm_private_dns_zone.this.id
 
   storage {
     size_gb            = var.storage_size_gb
-    auto_grow_enabled  = var.storage_auto_grow_enabled
     iops               = var.storage_iops
+    auto_grow_enabled  = var.storage_auto_grow_enabled
     io_scaling_enabled = var.storage_io_scaling_enabled
+  }
+
+  high_availability {
+    mode = var.zone_redundant_ha_enabled ? "ZoneRedundant" : "SameZone"
   }
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.this]

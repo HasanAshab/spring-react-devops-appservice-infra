@@ -66,7 +66,7 @@ variable "admin_password_wo_version" {
   type        = number
 }
 
-variable "enable_geo_redundant_backup" {
+variable "geo_redundant_backup_enabled" {
   description = "Enable Geo-Redundant Backup"
   type        = bool
 }
@@ -80,7 +80,7 @@ variable "backup_retention_days" {
 variable "storage_size_gb" {
   description = "Storage Size (GB)"
   type        = number
-  default     = 20
+  default     = null
 }
 
 variable "storage_auto_grow_enabled" {
@@ -101,6 +101,13 @@ variable "storage_io_scaling_enabled" {
   type        = bool
   default     = false
 }
+
+variable "zone_redundant_ha_enabled" {
+  description = "Whether to enable zone-redundant high availability for MySQL Flexible Server"
+  type        = bool
+  default     = false
+}
+
 
 variable "charset" {
   description = "Charset of Database"
