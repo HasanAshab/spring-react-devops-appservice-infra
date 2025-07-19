@@ -150,7 +150,7 @@ module "frontdoor" {
       }
       origins = [
         for frontend in module.frontend : {
-          host_name = frontend.fqdn
+          host_name = frontend.resource_uri
           priority  = 1
         }
       ]
@@ -162,7 +162,7 @@ module "frontdoor" {
       }
       origins = [
         for backend in module.backend : {
-          host_name = backend.fqdn
+          host_name = backend.resource_uri
           priority  = 1
         }
       ]
