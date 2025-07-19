@@ -6,10 +6,11 @@ asp_sku          = "B1"
 asp_worker_count = 1
 
 # database
-database_sku            = "B_Standard_B1ms"
-database_version        = "8.0.21"
-database_name           = "db"
-database_admin_username = "admin4321"
+database_sku             = "B_Standard_B1ms"
+database_version         = "8.0.21"
+database_name            = "db"
+database_admin_username  = "admin4321"
+database_storage_size_gb = 20
 
 # backend
 backend_docker_registry_url = "https://ghcr.io/hasanashab"
