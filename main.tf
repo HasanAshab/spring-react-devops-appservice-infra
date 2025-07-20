@@ -35,7 +35,7 @@ module "database" {
   backup_retention_days        = var.database_backup_retention_days
   storage_size_gb              = var.database_storage_size_gb
   geo_redundant_backup_enabled = var.database_geo_redundant_backup_enabled
-  zone_redundant_ha_enabled    = var.database_zone_redundant_ha_enabled
+  ha_enabled                   = var.database_ha_enabled
   storage_auto_grow_enabled    = var.database_storage_auto_grow_enabled
   storage_io_scaling_enabled   = var.database_storage_io_scaling_enabled
 }
@@ -94,11 +94,6 @@ module "asp" {
   }
 }
 
-data "azurerm_cdn_frontdoor_profile" "this" {
-  name                = var.frontdoor_profile_name
-  resource_group_name = azurerm_resource_group.this[var.primary_location].name
-}
-
 module "backend" {
   for_each            = local.locations
   source              = "./modules/backend"
@@ -114,7 +109,7 @@ module "backend" {
   docker_image_name   = var.backend_docker_image_name
   docker_image_tag    = var.backend_docker_image_tag
   port                = var.backend_port
-  front_door_guid     = data.azurerm_cdn_frontdoor_profile.this.resource_guid
+  front_door_guid     = module.frontdoor.resource_guid
   db_host             = module.database.fqdn
   db_name             = var.database_name
   db_username         = var.database_admin_username
@@ -134,12 +129,11 @@ module "frontend" {
   docker_registry_url = var.frontend_docker_registry_url
   docker_image_name   = var.frontend_docker_image_name
   docker_image_tag    = var.frontend_docker_image_tag
-  front_door_guid     = data.azurerm_cdn_frontdoor_profile.this.resource_guid
+  front_door_guid     = module.frontdoor.resource_guid
 }
 
 module "frontdoor" {
   source              = "./modules/frontdoor"
-  profile_name        = var.frontdoor_profile_name
   resource_group_name = azurerm_resource_group.this[var.primary_location].name
   sku                 = var.frontdoor_sku
   routes = {

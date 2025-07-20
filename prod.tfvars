@@ -18,7 +18,7 @@ database_name                         = "db"
 database_admin_username               = "admin4321"
 database_backup_retention_days        = 7
 database_geo_redundant_backup_enabled = true
-database_zone_redundant_ha_enabled    = true
+database_ha_enabled                   = true
 database_storage_auto_grow_enabled    = true
 database_storage_io_scaling_enabled   = true
 
@@ -31,5 +31,4 @@ frontend_docker_registry_url = "https://ghcr.io/hasanashab"
 frontend_docker_image_name   = "spring-react-devops-appservice-frontend"
 
 # front door
-frontdoor_profile_name = "fd-profile"
-frontdoor_sku          = "Standard_AzureFrontDoor"
+frontdoor_sku = "Standard_AzureFrontDoor"

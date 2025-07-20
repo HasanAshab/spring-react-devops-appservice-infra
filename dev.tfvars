@@ -21,5 +21,4 @@ frontend_docker_registry_url = "https://ghcr.io/hasanashab"
 frontend_docker_image_name   = "spring-react-devops-appservice-frontend"
 
 # front door
-frontdoor_profile_name = "fd-profile"
-frontdoor_sku          = "Standard_AzureFrontDoor"
+frontdoor_sku = "Standard_AzureFrontDoor"

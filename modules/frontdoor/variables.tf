@@ -1,8 +1,3 @@
-variable "profile_name" {
-  description = "Profile Name"
-  type        = string
-}
-
 variable "resource_group_name" {
   description = "Resource Group Name"
   type        = string
@@ -28,14 +23,14 @@ variable "routes" {
         additional_latency_in_milliseconds = optional(number, 0)
         sample_size                        = optional(number, 16)
         successful_samples_required        = optional(number, 3)
-      }))
+      }), {})
       health_probe = optional(object({
         interval_in_seconds = optional(number, 30)
         path                = optional(string, "/")
         protocol            = optional(string, "Https")
         request_type        = optional(string, "HEAD")
-      }))
-    }))
+      }), {})
+    }), {})
     origins = list(object({
       host_name                      = string
       priority                       = number

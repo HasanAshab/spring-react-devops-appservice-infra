@@ -14,12 +14,12 @@ variable "secondary_location" {
   default     = null
 
   validation {
-    condition     = length(regexall(" ", var.secondary_location)) == 0
+    condition     = length(try(regexall(" ", var.secondary_location), [])) == 0
     error_message = "Location must not contain spaces"
   }
 
   validation {
-    condition     = var.secondary_location == null || var.secondary_location != var.primary_location
+    condition     = var.secondary_location != var.primary_location
     error_message = "Secondary location must be different from primary location"
   }
 }
@@ -61,7 +61,7 @@ variable "database_admin_password" {
 variable "database_backup_retention_days" {
   description = "Backup Retention Days"
   type        = number
-  default     = 0
+  default     = 1
 }
 
 variable "database_geo_redundant_backup_enabled" {
@@ -70,7 +70,7 @@ variable "database_geo_redundant_backup_enabled" {
   default     = false
 }
 
-variable "database_zone_redundant_ha_enabled" {
+variable "database_ha_enabled" {
   description = "Enable Zone Redundant High Availability for MySQL Server"
   type        = bool
   default     = false
@@ -184,11 +184,6 @@ variable "frontend_docker_image_tag" {
 }
 
 # Front Door
-
-variable "frontdoor_profile_name" {
-  description = "Front Door Profile Name"
-  type        = string
-}
 
 variable "frontdoor_sku" {
   description = "SKU of Front Door"

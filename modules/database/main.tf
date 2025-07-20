@@ -45,8 +45,11 @@ resource "azurerm_mysql_flexible_server" "this" {
     io_scaling_enabled = var.storage_io_scaling_enabled
   }
 
-  high_availability {
-    mode = var.zone_redundant_ha_enabled ? "ZoneRedundant" : "SameZone"
+  dynamic "high_availability" {
+    for_each = var.ha_enabled ? [1] : []
+    content {
+      mode = var.ha_mode
+    }
   }
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.this]

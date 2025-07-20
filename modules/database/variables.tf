@@ -102,12 +102,17 @@ variable "storage_io_scaling_enabled" {
   default     = false
 }
 
-variable "zone_redundant_ha_enabled" {
+variable "ha_enabled" {
   description = "Whether to enable zone-redundant high availability for MySQL Flexible Server"
   type        = bool
   default     = false
 }
 
+variable "ha_mode" {
+  description = "Zone Redundant High Availability Mode"
+  type        = string
+  default     = "ZoneRedundant"
+}
 
 variable "charset" {
   description = "Charset of Database"
