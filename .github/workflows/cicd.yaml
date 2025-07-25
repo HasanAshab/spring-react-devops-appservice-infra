@@ -103,6 +103,9 @@ jobs:
     name: Plan
     if: github.event_name == 'pull_request'
     needs: [format, lint, test, validate, scan]
+    permissions:
+      contents: read
+      pull-requests: write
     strategy:
       matrix:
         workspace: [dev, prod]
@@ -118,6 +121,9 @@ jobs:
   cost-estimation:
     name: Pre-Deployment Cost Estimation
     needs: plan
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout base branch
