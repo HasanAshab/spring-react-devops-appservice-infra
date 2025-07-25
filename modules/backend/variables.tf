@@ -10,6 +10,12 @@ variable "enable_telemetry" {
   default     = true
 }
 
+variable "enable_application_insights" {
+  description = "Enable Application Insights"
+  type        = bool
+  default     = true
+}
+
 variable "location" {
   description = "Location of all resources"
   type        = string
@@ -62,13 +68,8 @@ variable "docker_image_tag" {
 }
 
 variable "port" {
-  description = "Port"
-  type        = string
-}
-
-variable "front_door_guid" {
-  description = "Front Door GUID"
-  type        = string
+  description = "Exposed Port of the container"
+  type        = number
 }
 
 variable "db_host" {

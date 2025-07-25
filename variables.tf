@@ -145,6 +145,12 @@ variable "asp_autoscale_default_capacity" {
 
 # Backend
 
+variable "backend_enable_application_insights" {
+  description = "Enable Application Insights"
+  type        = bool
+  default     = false
+}
+
 variable "backend_docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
@@ -162,11 +168,17 @@ variable "backend_docker_image_tag" {
 
 variable "backend_port" {
   description = "Port of Backend App"
-  type        = string
-  default     = "80"
+  type        = number
+  default     = 8080
 }
 
 # Frontend
+
+variable "frontend_enable_application_insights" {
+  description = "Enable Application Insights"
+  type        = bool
+  default     = false
+}
 
 variable "frontend_docker_registry_url" {
   description = "Docker Registry URL"
@@ -181,6 +193,12 @@ variable "frontend_docker_image_name" {
 variable "frontend_docker_image_tag" {
   description = "Docker Image Tag"
   type        = string
+}
+
+variable "frontend_port" {
+  description = "Port of Frontend App"
+  type        = number
+  default     = 4200
 }
 
 # Front Door

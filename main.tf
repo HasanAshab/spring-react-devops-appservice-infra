@@ -95,41 +95,43 @@ module "asp" {
 }
 
 module "backend" {
-  for_each            = local.locations
-  source              = "./modules/backend"
-  extra_naming_suffix = local.extra_naming_suffixes[each.key]
-  enable_telemetry    = var.enable_telemetry
-  location            = azurerm_resource_group.this[each.key].location
-  resource_group_name = azurerm_resource_group.this[each.key].name
-  os_type             = var.asp_os_type
-  asp_id              = module.asp[each.key].resource_id
-  vnet_name           = azurerm_virtual_network.this[each.key].name
-  snet_address_prefix = cidrsubnet(local.vnet_cidr, 10, 1)
-  docker_registry_url = var.backend_docker_registry_url
-  docker_image_name   = var.backend_docker_image_name
-  docker_image_tag    = var.backend_docker_image_tag
-  port                = var.backend_port
-  front_door_guid     = module.frontdoor.resource_guid
-  db_host             = module.database.fqdn
-  db_name             = var.database_name
-  db_username         = var.database_admin_username
-  db_password         = var.database_admin_password
-  depends_on          = [module.database]
+  for_each                    = local.locations
+  source                      = "./modules/backend"
+  extra_naming_suffix         = local.extra_naming_suffixes[each.key]
+  enable_telemetry            = var.enable_telemetry
+  enable_application_insights = var.backend_enable_application_insights
+  location                    = azurerm_resource_group.this[each.key].location
+  resource_group_name         = azurerm_resource_group.this[each.key].name
+  os_type                     = var.asp_os_type
+  asp_id                      = module.asp[each.key].resource_id
+  vnet_name                   = azurerm_virtual_network.this[each.key].name
+  snet_address_prefix         = cidrsubnet(local.vnet_cidr, 10, 1)
+  docker_registry_url         = var.backend_docker_registry_url
+  docker_image_name           = var.backend_docker_image_name
+  docker_image_tag            = var.backend_docker_image_tag
+  port                        = var.backend_port
+  db_host                     = module.database.fqdn
+  db_name                     = var.database_name
+  db_username                 = var.database_admin_username
+  db_password                 = var.database_admin_password
+  depends_on                  = [module.database]
 }
 
 module "frontend" {
-  for_each            = local.locations
-  source              = "./modules/frontend"
-  extra_naming_suffix = local.extra_naming_suffixes[each.key]
-  enable_telemetry    = var.enable_telemetry
-  location            = azurerm_resource_group.this[each.key].location
-  resource_group_name = azurerm_resource_group.this[each.key].name
-  os_type             = var.asp_os_type
-  asp_id              = module.asp[each.key].resource_id
-  docker_registry_url = var.frontend_docker_registry_url
-  docker_image_name   = var.frontend_docker_image_name
-  docker_image_tag    = var.frontend_docker_image_tag
-  front_door_guid     = module.frontdoor.resource_guid
+  for_each                    = local.locations
+  source                      = "./modules/frontend"
+  extra_naming_suffix         = local.extra_naming_suffixes[each.key]
+  enable_application_insights = var.frontend_enable_application_insights
+  enable_telemetry            = var.enable_telemetry
+  location                    = azurerm_resource_group.this[each.key].location
+  resource_group_name         = azurerm_resource_group.this[each.key].name
+  os_type                     = var.asp_os_type
+  asp_id                      = module.asp[each.key].resource_id
+  docker_registry_url         = var.frontend_docker_registry_url
+  docker_image_name           = var.frontend_docker_image_name
+  docker_image_tag            = var.frontend_docker_image_tag
+  port                        = var.frontend_port
+  api_url                     = "https://${module.backend[each.key].resource_uri}"
 }
 
 module "frontdoor" {
@@ -145,18 +147,6 @@ module "frontdoor" {
       origins = [
         for frontend in module.frontend : {
           host_name = frontend.resource_uri
-          priority  = 1
-        }
-      ]
-    }
-    backend = {
-      patterns_to_match = ["/api/*"]
-      origin_group = {
-        session_affinity_enabled = false
-      }
-      origins = [
-        for backend in module.backend : {
-          host_name = backend.resource_uri
           priority  = 1
         }
       ]

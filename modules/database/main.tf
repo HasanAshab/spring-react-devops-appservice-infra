@@ -9,7 +9,7 @@ resource "azurerm_private_dns_zone" "this" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
-  name                  = "dns-link"
+  name                  = local.dns_zone_link_name
   resource_group_name   = var.resource_group_name
   virtual_network_id    = var.vnet_id
   private_dns_zone_name = azurerm_private_dns_zone.this.name
@@ -36,7 +36,6 @@ resource "azurerm_mysql_flexible_server" "this" {
   geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
   backup_retention_days        = var.backup_retention_days
   public_network_access        = local.public_network_access
-  private_dns_zone_id          = azurerm_private_dns_zone.this.id
 
   storage {
     size_gb            = var.storage_size_gb
