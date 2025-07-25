@@ -40,10 +40,9 @@ variable "worker_count" {
   type        = number
 }
 
-variable "enable_zone_balancing" {
+variable "zone_balancing_enabled" {
   description = "Enable Zone Balancing"
   type        = bool
-  default     = null
 }
 
 variable "autoscale_settings" {

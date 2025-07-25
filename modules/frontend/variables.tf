@@ -10,6 +10,12 @@ variable "enable_telemetry" {
   default     = true
 }
 
+variable "enable_application_insights" {
+  description = "Enable Application Insights"
+  type        = bool
+  default     = true
+}
+
 variable "location" {
   description = "Location of all resources"
   type        = string
@@ -30,6 +36,11 @@ variable "asp_id" {
   type        = string
 }
 
+variable "os_type" {
+  description = "OS Type"
+  type        = string
+}
+
 variable "docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
@@ -44,4 +55,14 @@ variable "docker_image_tag" {
   description = "Docker Image Tag"
   type        = string
   default     = "latest"
+}
+
+variable "port" {
+  description = "Exposed Port of the container"
+  type        = number
+}
+
+variable "api_url" {
+  description = "API URL"
+  type        = string
 }

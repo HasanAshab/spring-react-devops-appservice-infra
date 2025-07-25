@@ -12,7 +12,7 @@ module "asp" {
   os_type                = var.os_type
   sku_name               = var.sku
   worker_count           = var.worker_count
-  zone_balancing_enabled = var.enable_zone_balancing
+  zone_balancing_enabled = var.zone_balancing_enabled
 }
 
 resource "azurerm_monitor_autoscale_setting" "asp" {

@@ -9,7 +9,7 @@ resource "azurerm_private_dns_zone" "this" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
-  name                  = "dns-link"
+  name                  = local.dns_zone_link_name
   resource_group_name   = var.resource_group_name
   virtual_network_id    = var.vnet_id
   private_dns_zone_name = azurerm_private_dns_zone.this.name
@@ -32,16 +32,23 @@ resource "azurerm_mysql_flexible_server" "this" {
   administrator_password_wo_version = var.admin_password_wo_version
   sku_name                          = var.sku
   version                           = var.db_version
-  geo_redundant_backup_enabled      = local.geo_redundant_backup_enabled
-  backup_retention_days             = var.backup_retention_days
-  public_network_access             = local.public_network_access
-  private_dns_zone_id               = azurerm_private_dns_zone.this.id
+  # checkov:skip=CKV_AZURE_94: Geo-redundant backup is enabled conditionally via variable
+  geo_redundant_backup_enabled = var.geo_redundant_backup_enabled
+  backup_retention_days        = var.backup_retention_days
+  public_network_access        = local.public_network_access
 
   storage {
     size_gb            = var.storage_size_gb
-    auto_grow_enabled  = var.storage_auto_grow_enabled
     iops               = var.storage_iops
+    auto_grow_enabled  = var.storage_auto_grow_enabled
     io_scaling_enabled = var.storage_io_scaling_enabled
+  }
+
+  dynamic "high_availability" {
+    for_each = var.ha_enabled ? [1] : []
+    content {
+      mode = var.ha_mode
+    }
   }
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.this]
