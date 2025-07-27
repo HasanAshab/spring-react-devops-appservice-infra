@@ -56,13 +56,13 @@ terraform workspace new dev
 Run Terraform apply with the corresponding tfvars file:
 
 ```bash
-terraform apply -var-file=env/dev.tfvars
+terraform apply -var-file=dev.tfvars
 ```
 
 For production:
 
 ```bash
-terraform apply -var-file=env/prod.tfvars
+terraform apply -var-file=prod.tfvars
 ```
 
 ## 🐳 Docker Image Tags (frontend.auto.tfvars & backend.auto.tfvars)
