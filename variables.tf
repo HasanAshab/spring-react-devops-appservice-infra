@@ -27,7 +27,7 @@ variable "secondary_location" {
 variable "enable_telemetry" {
   description = "Enable Telemetry for all modules"
   type        = bool
-  default     = true
+  default     = false
 }
 
 # Database

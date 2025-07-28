@@ -1,5 +1,4 @@
 primary_location = "centralus"
-enable_telemetry = false
 
 # asp
 asp_sku          = "B1"
