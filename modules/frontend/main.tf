@@ -30,7 +30,7 @@ module "webapp" {
         }
       }
     }
-  } : null
+  } : {}
   site_config = {
     health_check_path                 = var.health_check_path
     health_check_eviction_time_in_min = var.health_check_eviction_time_in_min

@@ -42,7 +42,7 @@ module "webapp" {
         }
       }
     }
-  } : null
+  } : {}
   app_settings = {
     WEBSITES_PORT              = var.port
     SPRING_DATASOURCE_URL      = "jdbc:mysql://${var.db_host}:3306/${var.db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
