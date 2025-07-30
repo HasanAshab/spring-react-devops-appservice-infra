@@ -1,4 +1,5 @@
-primary_location = "centralus"
+primary_location   = "centralus"
+secondary_location = "eastus"
 
 # asp
 asp_sku          = "B1"

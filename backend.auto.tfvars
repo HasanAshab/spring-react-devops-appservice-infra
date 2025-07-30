@@ -1,1 +1,0 @@
-backend_docker_image_tag = "sha-cbe36cbc041c06ddeb23e85ea478f18f63571052"

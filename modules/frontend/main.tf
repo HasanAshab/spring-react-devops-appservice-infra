@@ -13,14 +13,27 @@ module "webapp" {
   resource_group_name         = var.resource_group_name
   location                    = var.location
   service_plan_resource_id    = var.asp_id
-  https_only                  = local.https_only
+  tags                        = var.tags
   app_settings = {
     WEBSITES_PORT     = var.port
     REACT_APP_API_URL = var.api_url
   }
+  deployment_slots = var.enable_blue_green_deployment ? {
+    staging = {
+      name = "staging"
+      site_config = {
+        application_stack = {
+          docker = {
+            docker_registry_url = var.docker_registry_url
+            docker_image_name   = "${var.docker_image_name}:${var.docker_image_tag}"
+          }
+        }
+      }
+    }
+  } : null
   site_config = {
-    ftps_state             = local.ftps_state
-    vnet_route_all_enabled = local.vnet_route_all_enabled
+    health_check_path                 = var.health_check_path
+    health_check_eviction_time_in_min = var.health_check_eviction_time_in_min
     application_stack = {
       docker = {
         docker_registry_url = var.docker_registry_url

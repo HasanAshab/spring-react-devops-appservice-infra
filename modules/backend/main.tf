@@ -29,6 +29,20 @@ module "webapp" {
   service_plan_resource_id    = var.asp_id
   virtual_network_subnet_id   = azurerm_subnet.this.id
   https_only                  = local.https_only
+  tags                        = var.tags
+  deployment_slots = var.enable_blue_green_deployment ? {
+    staging = {
+      name = "staging"
+      site_config = {
+        application_stack = {
+          docker = {
+            docker_registry_url = var.docker_registry_url
+            docker_image_name   = "${var.docker_image_name}:${var.docker_image_tag}"
+          }
+        }
+      }
+    }
+  } : null
   app_settings = {
     WEBSITES_PORT              = var.port
     SPRING_DATASOURCE_URL      = "jdbc:mysql://${var.db_host}:3306/${var.db_name}?allowPublicKeyRetrieval=true&useSSL=true&createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Paris"
@@ -36,8 +50,10 @@ module "webapp" {
     SPRING_DATASOURCE_PASSWORD = var.db_password
   }
   site_config = {
-    ftps_state             = local.ftps_state
-    vnet_route_all_enabled = local.vnet_route_all_enabled
+    health_check_path                 = var.health_check_path
+    health_check_eviction_time_in_min = var.health_check_eviction_time_in_min
+    ftps_state                        = local.ftps_state
+    vnet_route_all_enabled            = local.vnet_route_all_enabled
     application_stack = {
       docker = {
         docker_registry_url = var.docker_registry_url

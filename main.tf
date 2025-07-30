@@ -95,43 +95,51 @@ module "asp" {
 }
 
 module "backend" {
-  for_each                    = local.locations
-  source                      = "./modules/backend"
-  extra_naming_suffix         = local.extra_naming_suffixes[each.key]
-  enable_telemetry            = var.enable_telemetry
-  enable_application_insights = var.backend_enable_application_insights
-  location                    = azurerm_resource_group.this[each.key].location
-  resource_group_name         = azurerm_resource_group.this[each.key].name
-  os_type                     = var.asp_os_type
-  asp_id                      = module.asp[each.key].resource_id
-  vnet_name                   = azurerm_virtual_network.this[each.key].name
-  snet_address_prefix         = cidrsubnet(local.vnet_cidr, 10, 1)
-  docker_registry_url         = var.backend_docker_registry_url
-  docker_image_name           = var.backend_docker_image_name
-  docker_image_tag            = var.backend_docker_image_tag
-  port                        = var.backend_port
-  db_host                     = module.database.fqdn
-  db_name                     = var.database_name
-  db_username                 = var.database_admin_username
-  db_password                 = var.database_admin_password
-  depends_on                  = [module.database]
+  for_each                     = local.locations
+  source                       = "./modules/backend"
+  extra_naming_suffix          = local.extra_naming_suffixes[each.key]
+  enable_telemetry             = var.enable_telemetry
+  enable_application_insights  = var.backend_enable_application_insights
+  enable_blue_green_deployment = var.backend_enable_blue_green_deployment
+  location                     = azurerm_resource_group.this[each.key].location
+  resource_group_name          = azurerm_resource_group.this[each.key].name
+  os_type                      = var.asp_os_type
+  asp_id                       = module.asp[each.key].resource_id
+  vnet_name                    = azurerm_virtual_network.this[each.key].name
+  snet_address_prefix          = cidrsubnet(local.vnet_cidr, 10, 1)
+  docker_registry_url          = var.backend_docker_registry_url
+  docker_image_name            = var.backend_docker_image_name
+  port                         = var.backend_port
+  db_host                      = module.database.fqdn
+  db_name                      = var.database_name
+  db_username                  = var.database_admin_username
+  db_password                  = var.database_admin_password
+  tags = {
+    AppName = local.project_name
+    Role    = "Backend"
+  }
+  depends_on = [module.database]
 }
 
 module "frontend" {
-  for_each                    = local.locations
-  source                      = "./modules/frontend"
-  extra_naming_suffix         = local.extra_naming_suffixes[each.key]
-  enable_application_insights = var.frontend_enable_application_insights
-  enable_telemetry            = var.enable_telemetry
-  location                    = azurerm_resource_group.this[each.key].location
-  resource_group_name         = azurerm_resource_group.this[each.key].name
-  os_type                     = var.asp_os_type
-  asp_id                      = module.asp[each.key].resource_id
-  docker_registry_url         = var.frontend_docker_registry_url
-  docker_image_name           = var.frontend_docker_image_name
-  docker_image_tag            = var.frontend_docker_image_tag
-  port                        = var.frontend_port
-  api_url                     = "https://${module.backend[each.key].resource_uri}"
+  for_each                     = local.locations
+  source                       = "./modules/frontend"
+  extra_naming_suffix          = local.extra_naming_suffixes[each.key]
+  enable_telemetry             = var.enable_telemetry
+  enable_application_insights  = var.frontend_enable_application_insights
+  enable_blue_green_deployment = var.frontend_enable_blue_green_deployment
+  location                     = azurerm_resource_group.this[each.key].location
+  resource_group_name          = azurerm_resource_group.this[each.key].name
+  os_type                      = var.asp_os_type
+  asp_id                       = module.asp[each.key].resource_id
+  docker_registry_url          = var.frontend_docker_registry_url
+  docker_image_name            = var.frontend_docker_image_name
+  port                         = var.frontend_port
+  api_url                      = "https://${module.backend[each.key].resource_uri}"
+  tags = {
+    AppName = local.project_name
+    Role    = "Frontend"
+  }
 }
 
 module "frontdoor" {

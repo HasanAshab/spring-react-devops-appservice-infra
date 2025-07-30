@@ -16,6 +16,12 @@ variable "enable_application_insights" {
   default     = true
 }
 
+variable "enable_blue_green_deployment" {
+  description = "If enabled, staging slot will be created"
+  type        = bool
+  default     = false
+}
+
 variable "location" {
   description = "Location of all resources"
   type        = string
@@ -67,6 +73,18 @@ variable "docker_image_tag" {
   default     = "latest"
 }
 
+variable "health_check_path" {
+  description = "Health Check Path"
+  type        = string
+  default     = "/"
+}
+
+variable "health_check_eviction_time_in_min" {
+  description = "Health Check Eviction Time (in minutes)"
+  type        = number
+  default     = 10
+}
+
 variable "port" {
   description = "Exposed Port of the container"
   type        = number
@@ -91,4 +109,10 @@ variable "db_password" {
   description = "Database Password"
   type        = string
   sensitive   = true
+}
+
+variable "tags" {
+  description = "Tags"
+  type        = map(string)
+  default     = null
 }

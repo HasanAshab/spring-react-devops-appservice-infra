@@ -23,14 +23,16 @@ database_storage_auto_grow_enabled    = true
 database_storage_io_scaling_enabled   = true
 
 # backend
-backend_enable_application_insights = true
-backend_docker_registry_url         = "https://ghcr.io/hasanashab"
-backend_docker_image_name           = "spring-react-devops-appservice-backend"
+backend_enable_application_insights  = true
+backend_enable_blue_green_deployment = true
+backend_docker_registry_url          = "https://ghcr.io/hasanashab"
+backend_docker_image_name            = "spring-react-devops-appservice-backend"
 
 # frontend
-frontend_enable_application_insights = true
-frontend_docker_registry_url         = "https://ghcr.io/hasanashab"
-frontend_docker_image_name           = "spring-react-devops-appservice-frontend"
+frontend_enable_application_insights  = true
+frontend_enable_blue_green_deployment = true
+frontend_docker_registry_url          = "https://ghcr.io/hasanashab"
+frontend_docker_image_name            = "spring-react-devops-appservice-frontend"
 
 # front door
 frontdoor_sku = "Standard_AzureFrontDoor"

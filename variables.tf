@@ -151,6 +151,12 @@ variable "backend_enable_application_insights" {
   default     = false
 }
 
+variable "backend_enable_blue_green_deployment" {
+  description = "Enable Blue/Green Deployment"
+  type        = bool
+  default     = false
+}
+
 variable "backend_docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
@@ -158,11 +164,6 @@ variable "backend_docker_registry_url" {
 
 variable "backend_docker_image_name" {
   description = "Docker Image Name"
-  type        = string
-}
-
-variable "backend_docker_image_tag" {
-  description = "Docker Image Tag"
   type        = string
 }
 
@@ -180,6 +181,12 @@ variable "frontend_enable_application_insights" {
   default     = false
 }
 
+variable "frontend_enable_blue_green_deployment" {
+  description = "Enable Blue/Green Deployment"
+  type        = bool
+  default     = false
+}
+
 variable "frontend_docker_registry_url" {
   description = "Docker Registry URL"
   type        = string
@@ -187,11 +194,6 @@ variable "frontend_docker_registry_url" {
 
 variable "frontend_docker_image_name" {
   description = "Docker Image Name"
-  type        = string
-}
-
-variable "frontend_docker_image_tag" {
-  description = "Docker Image Tag"
   type        = string
 }
 
