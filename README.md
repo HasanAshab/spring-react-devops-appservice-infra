@@ -56,13 +56,13 @@ terraform workspace new dev
 Run Terraform apply with the corresponding tfvars file:
 
 ```bash
-terraform apply -var-file=dev.tfvars
+terraform apply -var-file=./envs/dev.tfvars
 ```
 
 For production:
 
 ```bash
-terraform apply -var-file=prod.tfvars
+terraform apply -var-file=./envs/prod.tfvars
 ```
 
 Now I fully understand your flow.
