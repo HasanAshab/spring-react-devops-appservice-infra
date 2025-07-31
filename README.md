@@ -65,19 +65,6 @@ For production:
 terraform apply -var-file=./envs/prod.tfvars
 ```
 
-Now I fully understand your flow.
-
-Here's the **correct summary** of your **Docker Image Tag Strategy**:
-
-1. **Terraform Infra** sets the app’s container image to `latest` by default.
-2. On a new CI build in the **src repo**, a **unique image tag (image\_ref)** is built and pushed.
-3. The **Blue-Green Deployment GitHub Action**:
-
-   * Deploys this specific **image\_ref** to the **staging (blue) slot**.
-   * After deployment, **swaps the staging slot with production (green)**.
-4. You are **NOT updating .tfvars** in infra.
-5. **Terraform is not aware of the image\_ref being deployed.** It always has "latest" but the deployment slot is overridden dynamically via `az webapp config container set`.
-
 ---
 
 ## 🟦🟩 Deployment Strategy
