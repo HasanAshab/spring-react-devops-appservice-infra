@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - '**/*.tf'
-      - '*.tfvars'
+      - 'envs/*.tfvars'
       - '.github/workflows/cicd.yaml'
 
   pull_request:
@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - '**/*.tf'
-      - '*.tfvars'
+      - 'envs/*.tfvars'
       - '.github/workflows/cicd.yaml'
 
 env:
@@ -68,7 +68,7 @@ jobs:
       - name: Terraform Test
         uses: dflook/terraform-test@v2
         with:
-          var_file: ${{ matrix.workspace }}.tfvars
+          var_file: envs/${{ matrix.workspace }}.tfvars
 
   validate:
     name: Validate
@@ -116,7 +116,7 @@ jobs:
       - uses: dflook/terraform-plan@v2
         with:
           workspace: ${{ matrix.workspace }}
-          var_file: ${{ matrix.workspace }}.tfvars
+          var_file: envs/${{ matrix.workspace }}.tfvars
 
   cost-estimation:
     name: Pre-Deployment Cost Estimation
@@ -171,7 +171,7 @@ jobs:
         uses: dflook/terraform-apply@v2
         with:
           workspace: ${{ matrix.workspace }}
-          var_file: ${{ matrix.workspace }}.tfvars
+          var_file: envs/${{ matrix.workspace }}.tfvars
 
   cost-analysis:
     name: Post-Deployment Cost Analysis and Report
